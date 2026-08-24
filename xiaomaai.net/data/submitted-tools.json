@@ -1,0 +1,131 @@
+[
+  {
+    "name": "Test",
+    "url": "https://test.com",
+    "description": "test",
+    "category": "chat",
+    "tags": [
+      "test"
+    ],
+    "submittedAt": "2026-08-10T06:27:37.873Z"
+  },
+  {
+    "id": "sub-1",
+    "name": "AI 写作助手 Pro",
+    "description": "基于大语言模型的智能写作助手，支持多语言文本生成",
+    "url": "https://example.com/ai-writer",
+    "category": "chat",
+    "tags": [
+      "写作",
+      "文本生成",
+      "AI"
+    ],
+    "pricing": "freemium",
+    "submitter": "张三",
+    "submitterEmail": "zhangsan@example.com",
+    "submittedAt": "2026-07-20T10:30:00Z",
+    "status": "pending"
+  },
+  {
+    "id": "sub-2",
+    "name": "智能代码审查",
+    "description": "AI 驱动的代码审查工具，自动检测 bug 和安全漏洞",
+    "url": "https://example.com/code-review",
+    "category": "code",
+    "tags": [
+      "代码审查",
+      "开发工具",
+      "AI"
+    ],
+    "pricing": "paid",
+    "submitter": "李四",
+    "submitterEmail": "lisi@example.com",
+    "submittedAt": "2026-07-21T14:00:00Z",
+    "status": "pending"
+  },
+  {
+    "id": "sub-3",
+    "name": "图像风格迁移",
+    "description": "一键将照片转换为艺术风格，支持多种画风",
+    "url": "https://example.com/style-transfer",
+    "category": "image",
+    "tags": [
+      "图像处理",
+      "风格迁移",
+      "AI"
+    ],
+    "pricing": "free",
+    "submitter": "王五",
+    "submitterEmail": "wangwu@example.com",
+    "submittedAt": "2026-07-22T09:15:00Z",
+    "status": "approved"
+  },
+  {
+    "id": "sub-4",
+    "name": "视频字幕生成器",
+    "description": "自动识别视频语音并生成多语言字幕",
+    "url": "https://example.com/subtitle-gen",
+    "category": "video",
+    "tags": [
+      "视频",
+      "字幕",
+      "AI"
+    ],
+    "pricing": "freemium",
+    "submitter": "赵六",
+    "submitterEmail": "zhaoliu@example.com",
+    "submittedAt": "2026-07-23T16:45:00Z",
+    "status": "pending"
+  },
+  {
+    "id": "sub-5",
+    "name": "AI 音乐创作",
+    "description": "基于 AI 的音乐生成工具，支持多种风格和乐器",
+    "url": "https://example.com/ai-music",
+    "category": "audio",
+    "tags": [
+      "音乐",
+      "创作",
+      "AI"
+    ],
+    "pricing": "paid",
+    "submitter": "孙七",
+    "submitterEmail": "sunqi@example.com",
+    "submittedAt": "2026-07-24T08:00:00Z",
+    "status": "pending"
+  },
+  {
+    "id": "sub-6",
+    "name": "智能日程管理",
+    "description": "AI 驱动的日程管理工具，自动优化时间安排",
+    "url": "https://example.com/smart-calendar",
+    "category": "productivity",
+    "tags": [
+      "日程",
+      "效率",
+      "AI"
+    ],
+    "pricing": "freemium",
+    "submitter": "周八",
+    "submitterEmail": "zhouba@example.com",
+    "submittedAt": "2026-07-19T11:20:00Z",
+    "status": "rejected"
+  },
+  {
+    "id": "sub-7",
+    "name": "AI 数据分析平台",
+    "description": "自然语言驱动的数据分析工具，自动生成可视化图表",
+    "url": "https://example.com/data-analytics",
+    "category": "productivity",
+    "tags": [
+      "数据分析",
+      "可视化",
+      "AI"
+    ],
+    "pricing": "enterprise",
+    "submitter": "吴九",
+    "submitterEmail": "wujiu@example.com",
+    "submittedAt": "2026-07-23T13:30:00Z",
+    "status": "pending"
+  }
+]

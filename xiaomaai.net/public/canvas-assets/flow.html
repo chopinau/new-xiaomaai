@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小马AI · 节点画布 (Flow Canvas) | Image2</title>
+    <meta name="xiaoma-ai-channel" content="dev">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon-purple: #7E22CE;
+            --neon-pink: #EC4899;
+            --cyber-blue: #06B6D4;
+            --aurora-green: #22C55E;
+        }
+        html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: radial-gradient(circle at 50% 30%, rgba(126, 34, 206, 0.08), #000 70%);
+            color: #fff;
+        }
+        #canvas-stage {
+            position: absolute; top: 56px; left: 0; right: 0; bottom: 0;
+            overflow: hidden;
+            background-image:
+                radial-gradient(circle, rgba(255,255,255,0.04) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        #canvas-transform {
+            position: absolute; left: 0; top: 0;
+            width: 0; height: 0;
+            transform-origin: 0 0;
+            will-change: transform;
+        }
+        svg.edges-layer {
+            position: absolute; left: 0; top: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .flow-node {
+            position: absolute;
+            min-width: 240px;
+            background: rgba(10, 10, 14, 0.92);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            color: #fff;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.6);
+            z-index: 2;
+            user-select: none;
+            backdrop-filter: blur(6px);
+            transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+        }
+        .flow-node:hover { border-color: rgba(126, 34, 206, 0.4); }
+        .flow-node.dragging {
+            z-index: 10;
+            transform: scale(1.02);
+            box-shadow: 0 0 0 1.5px var(--neon-pink), 0 12px 40px rgba(236, 72, 153, 0.45), 0 0 30px rgba(236, 72, 153, 0.2);
+            border-color: var(--neon-pink);
+            transition: box-shadow 0.15s, transform 0.05s;
+        }
+        .flow-node.selected { border-color: var(--neon-pink); box-shadow: 0 0 0 1px var(--neon-pink), 0 6px 28px rgba(236, 72, 153, 0.3); }
+        .flow-node.generating { border-color: var(--cyber-blue); }
+        .flow-node.done { border-color: var(--aurora-green); }
+        .flow-node.error { border-color: #EF4444; }
+        .flow-node.dim { opacity: 0.25; }
+        .node-header {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 12px;
+            background: linear-gradient(135deg, rgba(126,34,206,0.32), rgba(236,72,153,0.22));
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            border-radius: 10px 10px 0 0;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: move;
+            transition: background 0.15s;
+        }
+        .node-header:hover { background: linear-gradient(135deg, rgba(126,34,206,0.5), rgba(236,72,153,0.4)); }
+        .node-header:active { cursor: grabbing; }
+        .node-body { padding: 10px 12px; }
+        .node-input, .node-textarea, .node-select {
+            width: 100%; box-sizing: border-box;
+            padding: 6px 8px; margin-top: 4px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif; font-size: 12px;
+        }
+        .node-textarea { min-height: 60px; resize: vertical; }
+        .node-input:focus, .node-textarea:focus, .node-select:focus {
+            outline: none; border-color: var(--neon-purple);
+        }
+        .node-row { display: flex; gap: 6px; align-items: center; margin-top: 6px; }
+        .node-row .node-input, .node-row .node-select { flex: 1; }
+        .run-btn {
+            width: 100%; margin-top: 8px;
+            padding: 7px 10px;
+            background: linear-gradient(135deg, var(--neon-purple), var(--neon-pink));
+            border: 0; border-radius: 6px;
+            color: #fff; font-weight: 600;
+            cursor: pointer; font-size: 12px;
+            font-family: 'Rajdhani', sans-serif;
+        }
+        .run-btn:hover { filter: brightness(1.18); }
+        .run-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .img-preview { max-width: 100%; max-height: 200px; border-radius: 6px; margin-top: 6px; display: block; }
+        .status-tag {
+            display: inline-block;
+            padding: 2px 6px;
+            font-size: 10px;
+            border-radius: 4px;
+            margin-left: auto;
+            background: rgba(255,255,255,0.1);
+        }
+        .flow-node.generating .status-tag { background: var(--cyber-blue); }
+        .flow-node.done .status-tag { background: var(--aurora-green); color: #000; }
+        .flow-node.error .status-tag { background: #EF4444; }
+        .error-text { color: #FCA5A5; font-size: 11px; margin-top: 6px; }
+
+        /* Connection ports */
+        .port {
+            position: absolute;
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: crosshair;
+            z-index: 5;
+            transition: transform 0.12s, box-shadow 0.12s;
+        }
+        .port.target { left: -7px; background: var(--neon-purple); }
+        .port.source { right: -7px; background: var(--neon-pink); }
+        .port:hover { transform: translateY(-50%) scale(1.4); box-shadow: 0 0 12px currentColor; }
+        .port.connection-target {
+            transform: translateY(-50%) scale(1.8);
+            box-shadow: 0 0 16px var(--aurora-green), 0 0 32px var(--aurora-green);
+            background: var(--aurora-green) !important;
+        }
+        .edge {
+            cursor: pointer;
+            transition: stroke-width 0.12s;
+        }
+        .edge:hover { stroke-width: 3.5; }
+
+        /* Topbar */
+        .topbar {
+            position: absolute; top: 0; left: 0; right: 0;
+            min-height: 56px; z-index: 30;
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 12px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            flex-wrap: wrap;
+            align-content: center;
+        }
+        .topbar .title { flex-shrink: 0; font-size: 16px; }
+        .topbar .btn {
+            flex-shrink: 0; white-space: nowrap; padding: 5px 8px; font-size: 12px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 6px;
+            color: #fff;
+            cursor: pointer;
+            font-family: 'Rajdhani', sans-serif;
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+        .topbar .api-pill { flex-shrink: 0; font-size: 11px; padding: 3px 8px; }
+        .topbar .search { flex: 1; min-width: 100px; max-width: 200px; padding: 5px 10px; font-size: 12px; }
+        .topbar .title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px; font-weight: 800;
+            background: linear-gradient(90deg, var(--neon-purple), var(--neon-pink), var(--cyber-blue));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .topbar .btn:hover { background: rgba(126,34,206,0.25); border-color: var(--neon-purple); }
+        .topbar .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .topbar .search {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            color: #fff;
+            font-family: 'Rajdhani', sans-serif;
+        }
+        .api-pill {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 4px 10px;
+            background: rgba(34, 197, 94, 0.12);
+            border: 1px solid rgba(34, 197, 94, 0.4);
+            border-radius: 999px;
+            color: #86efac; font-size: 12px;
+        }
+        .api-pill::before {
+            content: ''; width: 6px; height: 6px;
+            background: #22C55E; border-radius: 50%;
+            box-shadow: 0 0 6px #22C55E;
+        }
+        .api-pill.warn {
+            background: rgba(234, 179, 8, 0.12);
+            border-color: rgba(234, 179, 8, 0.4);
+            color: #fde68a;
+        }
+        .api-pill.warn::before { background: #EAB308; box-shadow: 0 0 6px #EAB308; }
+
+        /* Add menu */
+        .add-menu {
+            position: absolute; top: 62px; left: 175px;
+            background: rgba(0, 0, 0, 0.95);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            padding: 4px;
+            min-width: 180px;
+            z-index: 50;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+        }
+        .add-menu .item {
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .add-menu .item:hover { background: rgba(126,34,206,0.25); }
+
+        /* MiniMap */
+        .minimap {
+            position: absolute; bottom: 16px; right: 16px;
+            width: 192px; height: 132px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid rgba(126, 34, 206, 0.4);
+            border-radius: 8px;
+            z-index: 20;
+            overflow: hidden;
+        }
+        .minimap-canvas { width: 100%; height: 100%; }
+        .minimap-viewport {
+            position: absolute;
+            border: 1.5px solid var(--neon-pink);
+            background: rgba(236, 72, 153, 0.1);
+            pointer-events: none;
+        }
+        .minimap-controls {
+            position: absolute; bottom: 16px; right: 220px;
+            display: flex; flex-direction: column; gap: 4px;
+            z-index: 20;
+        }
+        .minimap-controls button {
+            width: 32px; height: 32px;
+            background: rgba(0,0,0,0.7);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 6px;
+            color: #fff; font-size: 16px;
+            cursor: pointer;
+        }
+        .minimap-controls button:hover { background: rgba(126,34,206,0.3); }
+
+        /* Toast */
+        .toast {
+            position: fixed; bottom: 24px; left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 16px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid var(--aurora-green);
+            border-radius: 8px;
+            color: #fff;
+            z-index: 100;
+            animation: toastIn 0.25s ease;
+        }
+        .toast.error { border-color: #EF4444; }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+        .help-tip {
+            position: absolute; bottom: 16px; left: 16px;
+            padding: 8px 12px;
+            background: rgba(0,0,0,0.6);
+            border-radius: 8px;
+            font-size: 11px;
+            color: rgba(255,255,255,0.5);
+            z-index: 20;
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <div class="title">小马AI · Flow</div>
+        <span id="api-pill" class="api-pill">检查中...</span>
+        <span id="agent-pill" class="api-pill warn">Agent: 检测中</span>
+        <input id="search" class="search" placeholder="🔍 搜索节点（标题/提示词/模型）" />
+        <button class="btn" id="btn-add">➕ 添加节点</button>
+        <button class="btn" id="btn-undo">↶ 撤销</button>
+        <button class="btn" id="btn-redo">↷ 重做</button>
+        <button class="btn" id="btn-import">📂 导入</button>
+        <button class="btn" id="btn-export">💾 导出</button>
+        <button class="btn" id="btn-clear">🗑 清空</button>
+        <a class="btn" href="./v2.html">← 旧画布</a>
+        <a class="btn" href="../index.html">🏠 首页</a>
+    </div>
+
+    <div id="add-menu" class="add-menu" style="display:none;">
+        <div class="item" data-type="prompt">📝 Prompt 节点</div>
+        <div class="item" data-type="image">🎨 Image Gen 节点</div>
+        <div class="item" data-type="reverse">🔍 Reverse 节点</div>
+    </div>
+
+    <div id="canvas-stage">
+        <div id="canvas-transform">
+            <svg class="edges-layer" id="edges-svg" width="6000" height="6000">
+                <defs>
+                    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                        <path d="M 0 0 L 10 5 L 0 10 z" fill="#EC4899" />
+                    </marker>
+                </defs>
+            </svg>
+            <div id="nodes-layer"></div>
+        </div>
+    </div>
+
+    <div class="minimap">
+        <canvas id="minimap-canvas" class="minimap-canvas" width="192" height="132"></canvas>
+        <div id="minimap-viewport" class="minimap-viewport"></div>
+    </div>
+    <div class="minimap-controls">
+        <button id="btn-zoom-in" title="放大">+</button>
+        <button id="btn-zoom-out" title="缩小">−</button>
+        <button id="btn-fit" title="适配视图">⛶</button>
+    </div>
+
+    <div id="toast" class="toast" style="display:none;"></div>
+
+    <div class="help-tip">
+        💡 拖拽节点右侧端点连线 · 滚轮缩放 · 空白处拖拽平移 · Ctrl+Z 撤销 · Del 删除选中
+    </div>
+
+    <!-- 复用 v2 的 API/配置层（保持 API URL/Key 连接方式不变稳定） -->
+    <script src="./js/safe-storage.js"></script>
+    <script src="./js/db.js"></script>
+    <script src="./js/config.js"></script>
+    <script src="./js/api.js"></script>
+    <script src="./js/utils.js"></script>
+    <script src="./js/flow-app.js"></script>
+</body>
+</html>

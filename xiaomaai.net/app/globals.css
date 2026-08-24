@@ -1,0 +1,297 @@
+@import "tailwindcss";
+
+@theme {
+  /* 覆盖 shadcn 默认值 */
+  --color-background: #f8f7fc;
+  --color-foreground: #1e1b2e;
+  --color-card:       #ffffff;
+  --color-card-foreground: #1e1b2e;
+  --color-muted:      #f3f0fa;
+  --color-muted-foreground: #7c7a8a;
+  --color-border:     #e8e4f0;
+  --color-input:      #e8e4f0;
+  --color-ring:       #7c3aed;
+  /* 小马 AI 品牌色：紫罗兰 + 电光蓝 + 品红 */
+  --color-primary:         #7c3aed;
+  --color-primary-foreground: #ffffff;
+  --color-secondary:         #f3f0fa;
+  --color-secondary-foreground: #1e1b2e;
+  --color-accent:         #06b6d4;
+  --color-accent-foreground: #ffffff;
+  --color-destructive:         #ef4444;
+  --color-destructive-foreground: #ffffff;
+  /* 品牌渐变色 */
+  --color-brand-purple:   #7c3aed;
+  --color-brand-blue:     #06b6d4;
+  --color-brand-pink:     #d946ef;
+  --color-brand-deep:     #4c1d95;
+  --color-brand-glow:     #a78bfa;
+
+  /* Radius scale from brand spec */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-2xl: 22px;
+  --radius: 14px;
+
+  /* Brand shadows */
+  --shadow-sm: 0 1px 2px rgba(124, 58, 237, 0.04);
+  --shadow-card: 0 2px 8px rgba(124, 58, 237, 0.06), 0 4px 16px rgba(0, 0, 0, 0.03);
+  --shadow-card-hover: 0 8px 24px rgba(124, 58, 237, 0.10), 0 4px 12px rgba(0, 0, 0, 0.04);
+  --shadow-hero: 0 12px 40px rgba(124, 58, 237, 0.18);
+  --shadow-glow: 0 0 30px rgba(124, 58, 237, 0.20);
+
+  --animate-fade-in: fadeIn 0.4s ease-out both;
+  --animate-fade-in-up: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-shimmer: shimmer 1.6s ease-in-out infinite;
+  --animate-marquee: marquee 30s linear infinite;
+}
+
+html, body {
+  background: #f8f7fc;
+  color: #1e1b2e;
+  font-family: 'Inter', -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* 选中文字配色 */
+::selection {
+  background: rgba(124, 58, 237, 0.18);
+  color: #1e1b2e;
+}
+
+/* 自定义滚动条 - 让滚动也流畅 */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(124, 58, 237, 0.2) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgba(124, 58, 237, 0.18);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(124, 58, 237, 0.32);
+  background-clip: padding-box;
+}
+
+/* 可访问性：焦点可见样式 */
+:focus-visible {
+  outline: 2px solid #7c3aed;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* 尊重用户减少动画偏好 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ============================================================
+   小马 AI 品牌设计系统
+   ============================================================ */
+
+/* 按钮点击缩放反馈 */
+button, a, [role="button"] {
+  transition-property: color, background-color, border-color, box-shadow, transform, opacity;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+button:active:not(:disabled), a:active, [role="button"]:active {
+  transform: scale(0.97);
+}
+
+/* 卡片悬停流畅过渡 */
+.card-brand, [class*="shadow-card"] {
+  transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 280ms cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 200ms ease-out;
+  will-change: transform;
+}
+
+/* 品牌卡片阴影 + 悬停上浮 */
+.card-brand {
+  box-shadow: var(--shadow-card);
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 180ms ease-out;
+}
+.card-brand:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* 品牌渐变文字 */
+.text-brand-gradient,
+.text-gradient-brand {
+  background: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+}
+
+/* 品牌渐变背景 */
+.bg-brand-gradient,
+.gradient-brand {
+  background: linear-gradient(135deg, #7c3aed 0%, #06b6d4 100%);
+}
+
+.gradient-deep {
+  background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 50%, #06b6d4 100%);
+}
+
+.gradient-pink {
+  background: linear-gradient(135deg, #7c3aed 0%, #d946ef 100%);
+}
+
+/* 品牌发光效果 */
+.brand-glow {
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.15), 0 0 40px rgba(6, 182, 212, 0.08);
+}
+.brand-glow-strong {
+  box-shadow: var(--shadow-glow);
+}
+
+.shadow-card {
+  box-shadow: var(--shadow-card);
+}
+.shadow-card-hover {
+  box-shadow: var(--shadow-card-hover);
+}
+.shadow-hero {
+  box-shadow: var(--shadow-hero);
+}
+.shadow-glow {
+  box-shadow: var(--shadow-glow);
+}
+
+/* Shimmer 骨架屏动画 */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(124, 58, 237, 0.06) 25%,
+    rgba(124, 58, 237, 0.12) 50%,
+    rgba(124, 58, 237, 0.06) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.6s ease-in-out infinite;
+}
+
+/* 渐入动画 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.animate-fade-in {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+/* 跑马灯动画 - 公告条滚动 */
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+/* 悬停缩放图标 */
+.hover-icon-scale:hover svg {
+  transform: scale(1.1);
+}
+
+/* 微光边框 */
+@keyframes borderGlow {
+  0%, 100% { border-color: rgba(124, 58, 237, 0.15); }
+  50% { border-color: rgba(124, 58, 237, 0.4); }
+}
+.border-glow {
+  animation: borderGlow 3s ease-in-out infinite;
+}
+
+/* 渐变旋转光环 */
+@keyframes gradientRotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.gradient-ring {
+  position: relative;
+}
+.gradient-ring::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  padding: 2px;
+  background: linear-gradient(135deg, #7c3aed, #06b6d4, #d946ef, #7c3aed);
+  background-size: 300% 300%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  animation: gradientRotate 4s linear infinite;
+}
+.gradient-ring:hover::before {
+  opacity: 1;
+}
+
+/* 数字滚动 placeholder */
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.count-animate {
+  animation: countUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* 隐藏滚动条 */
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}

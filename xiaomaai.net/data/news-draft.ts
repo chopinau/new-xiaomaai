@@ -1,0 +1,622 @@
+// 草稿区: GitHub Actions 自动抓取写入,人工在 /admin/news 审核发布
+// 抓取时间: 2026-08-24T08:11:38.603Z
+
+export interface NewsDraft {
+  id: string
+  title: string
+  source: string
+  lang?: 'zh' | 'en'
+  url: string
+  summary: string
+  category: 'llm' | 'opensource' | 'business' | 'funding'
+  publishedAt: string
+  fetchedAt: string
+  status: 'draft'
+}
+
+export const newsDrafts: NewsDraft[] = [
+  {
+    "id": "fn044h",
+    "title": "单芯片到万卡集群体系化突破 中诚华隆HL200推理芯片及超节点集群重磅发布",
+    "source": "量子位",
+    "lang": "zh",
+    "url": "https://www.qbitai.com/2026/08/478469.html",
+    "summary": "定义国产推理算力新范式 赋能万卡级AI推理算力规模化落地",
+    "category": "business",
+    "publishedAt": "Mon, 24 Aug 2026 07:04:36 +0000",
+    "fetchedAt": "2026-08-24T08:11:34.008Z",
+    "status": "draft"
+  },
+  {
+    "id": "t4z1tz",
+    "title": "8月25日直播预告 | AFAC2026金融智能创新大赛，总决赛路演倒计时来啦！",
+    "source": "量子位",
+    "lang": "zh",
+    "url": "https://www.qbitai.com/2026/08/478447.html",
+    "summary": "AFAC2026总决赛路演将于8月25-26日在上海阿纳迪酒店（长宁区临虹路7号）举办。",
+    "category": "business",
+    "publishedAt": "Mon, 24 Aug 2026 06:03:13 +0000",
+    "fetchedAt": "2026-08-24T08:11:34.008Z",
+    "status": "draft"
+  },
+  {
+    "id": "b25pwf",
+    "title": "阿里视频大模型Wan3.0正式上线，行业评价“稳定、真实、有质感”",
+    "source": "量子位",
+    "lang": "zh",
+    "url": "https://www.qbitai.com/2026/08/478427.html",
+    "summary": "8月24日，阿里巴巴视频生成大模型Wan3.0正式上线。",
+    "category": "llm",
+    "publishedAt": "Mon, 24 Aug 2026 05:09:27 +0000",
+    "fetchedAt": "2026-08-24T08:11:34.008Z",
+    "status": "draft"
+  },
+  {
+    "id": "hn5nga",
+    "title": "WRC 2026｜原生全模态世界模型：从模拟世界到交互世界",
+    "source": "量子位",
+    "lang": "zh",
+    "url": "https://www.qbitai.com/2026/08/478421.html",
+    "summary": "WRC 2026｜原生全模态世界模型：从模拟世界到交互世界",
+    "category": "llm",
+    "publishedAt": "Mon, 24 Aug 2026 05:04:52 +0000",
+    "fetchedAt": "2026-08-24T08:11:34.008Z",
+    "status": "draft"
+  },
+  {
+    "id": "cvin5y",
+    "title": "前保安杀进了AI决赛，高中生拿走25万！这AI比赛办得有点绝",
+    "source": "量子位",
+    "lang": "zh",
+    "url": "https://www.qbitai.com/2026/08/478358.html",
+    "summary": "Tim和胡彦斌亲自颁奖",
+    "category": "business",
+    "publishedAt": "Sun, 23 Aug 2026 23:19:06 +0000",
+    "fetchedAt": "2026-08-24T08:11:34.008Z",
+    "status": "draft"
+  },
+  {
+    "id": "6mn4v3",
+    "title": "WRC唯一真「人机共生」展台，是家沉浸式机器人咖啡店",
+    "source": "量子位",
+    "lang": "zh",
+    "url": "https://www.qbitai.com/2026/08/478319.html",
+    "summary": "玩的就是真实",
+    "category": "business",
+    "publishedAt": "Sun, 23 Aug 2026 13:20:00 +0000",
+    "fetchedAt": "2026-08-24T08:11:34.008Z",
+    "status": "draft"
+  },
+  {
+    "id": "oczs3o",
+    "title": "具身创业里的香港教授们",
+    "source": "量子位",
+    "lang": "zh",
+    "url": "https://www.qbitai.com/2026/08/478289.html",
+    "summary": "香港的大学里冒出了一批很特别的人",
+    "category": "business",
+    "publishedAt": "Sun, 23 Aug 2026 11:20:13 +0000",
+    "fetchedAt": "2026-08-24T08:11:34.008Z",
+    "status": "draft"
+  },
+  {
+    "id": "yazqxk",
+    "title": "他给了王兴兴第一个200万，现在给下一个「宇树」当董事长",
+    "source": "量子位",
+    "lang": "zh",
+    "url": "https://www.qbitai.com/2026/08/478234.html",
+    "summary": "多多支持像王兴兴这样优秀的具身机器人创业者",
+    "category": "business",
+    "publishedAt": "Sun, 23 Aug 2026 11:17:22 +0000",
+    "fetchedAt": "2026-08-24T08:11:34.008Z",
+    "status": "draft"
+  },
+  {
+    "id": "ipoxwk",
+    "title": "匿名牛来大模型被扒出智谱血缘，也有人怀疑Cursor拿开源GLM训的",
+    "source": "量子位",
+    "lang": "zh",
+    "url": "https://www.qbitai.com/2026/08/478191.html",
+    "summary": "Tokenizer、视频编码、API报错全扒一遍",
+    "category": "llm",
+    "publishedAt": "Sun, 23 Aug 2026 09:56:12 +0000",
+    "fetchedAt": "2026-08-24T08:11:34.008Z",
+    "status": "draft"
+  },
+  {
+    "id": "epxyar",
+    "title": "英伟达AI服务器将涨价15%！1GW数据中心成本激增50亿美元",
+    "source": "量子位",
+    "lang": "zh",
+    "url": "https://www.qbitai.com/2026/08/478164.html",
+    "summary": "内存成本飙升逼涨硬件",
+    "category": "business",
+    "publishedAt": "Sun, 23 Aug 2026 09:51:49 +0000",
+    "fetchedAt": "2026-08-24T08:11:34.008Z",
+    "status": "draft"
+  },
+  {
+    "id": "a9qyz",
+    "title": "AI boosted homework scores, then exam scores dropped: Study",
+    "source": "Hacker News AI",
+    "lang": "en",
+    "url": "https://canews24.online/?p=71",
+    "summary": "Article URL: https://canews24.online/?p=71 Comments URL: https://news.ycombinator.com/item?id=49389565 Points: 165 # Com",
+    "category": "business",
+    "publishedAt": "Fri, 21 Aug 2026 15:25:42 +0000",
+    "fetchedAt": "2026-08-24T08:11:35.457Z",
+    "status": "draft"
+  },
+  {
+    "id": "gayq3a",
+    "title": "How a Texas student blew the whistle on a rogue AI hacking attempt",
+    "source": "Hacker News AI",
+    "lang": "en",
+    "url": "https://www.reuters.com/world/how-texas-student-blew-whistle-rogue-ai-hacking-attempt-2026-08-20/",
+    "summary": "Article URL: https://www.reuters.com/world/how-texas-student-blew-whistle-rogue-ai-hacking-attempt-2026-08-20/ Comments ",
+    "category": "business",
+    "publishedAt": "Fri, 21 Aug 2026 13:43:33 +0000",
+    "fetchedAt": "2026-08-24T08:11:35.458Z",
+    "status": "draft"
+  },
+  {
+    "id": "9gujc5",
+    "title": "I'm becoming AI-blind",
+    "source": "Hacker News AI",
+    "lang": "en",
+    "url": "https://cymerys.com/w/im-becoming-ai-blind",
+    "summary": "Article URL: https://cymerys.com/w/im-becoming-ai-blind Comments URL: https://news.ycombinator.com/item?id=49386699 Poin",
+    "category": "business",
+    "publishedAt": "Fri, 21 Aug 2026 11:48:05 +0000",
+    "fetchedAt": "2026-08-24T08:11:35.458Z",
+    "status": "draft"
+  },
+  {
+    "id": "uc0lv1",
+    "title": "AI companies destroy physical books – let's scan rare books before it's too late",
+    "source": "Hacker News AI",
+    "lang": "en",
+    "url": "https://annas-archive.gl/blog/physical-destruction.html",
+    "summary": "Article URL: https://annas-archive.gl/blog/physical-destruction.html Comments URL: https://news.ycombinator.com/item?id=",
+    "category": "business",
+    "publishedAt": "Fri, 21 Aug 2026 02:37:47 +0000",
+    "fetchedAt": "2026-08-24T08:11:35.458Z",
+    "status": "draft"
+  },
+  {
+    "id": "57qjkq",
+    "title": "Copyright does not protect AI-generated content in EU",
+    "source": "Hacker News AI",
+    "lang": "en",
+    "url": "https://mathstodon.xyz/@maxpool/117128107757895678",
+    "summary": "Article URL: https://mathstodon.xyz/@maxpool/117128107757895678 Comments URL: https://news.ycombinator.com/item?id=49382",
+    "category": "business",
+    "publishedAt": "Fri, 21 Aug 2026 00:15:12 +0000",
+    "fetchedAt": "2026-08-24T08:11:35.458Z",
+    "status": "draft"
+  },
+  {
+    "id": "eehzyy",
+    "title": "Show HN: Huzzah – a novel approach to coding with AI",
+    "source": "Hacker News AI",
+    "lang": "en",
+    "url": "https://www.danielvaughn.dev/posts/huzzah/",
+    "summary": "Hello everyone. I've been working on this experimental editor called Huzzah. I've been working almost exclusively with c",
+    "category": "business",
+    "publishedAt": "Thu, 20 Aug 2026 19:05:36 +0000",
+    "fetchedAt": "2026-08-24T08:11:35.458Z",
+    "status": "draft"
+  },
+  {
+    "id": "jv1w0b",
+    "title": "Anti-AI fonts are useless and harmful",
+    "source": "Hacker News AI",
+    "lang": "en",
+    "url": "https://blog.yaros.ae/anti-ai-fonts-are-useless-and-harmful/",
+    "summary": "Article URL: https://blog.yaros.ae/anti-ai-fonts-are-useless-and-harmful/ Comments URL: https://news.ycombinator.com/ite",
+    "category": "business",
+    "publishedAt": "Thu, 20 Aug 2026 15:06:53 +0000",
+    "fetchedAt": "2026-08-24T08:11:35.458Z",
+    "status": "draft"
+  },
+  {
+    "id": "l5nu0e",
+    "title": "Don't paste the AI, please",
+    "source": "Hacker News AI",
+    "lang": "en",
+    "url": "https://dontpastetheai.com/",
+    "summary": "Article URL: https://dontpastetheai.com/ Comments URL: https://news.ycombinator.com/item?id=49371857 Points: 1044 # Comm",
+    "category": "business",
+    "publishedAt": "Thu, 20 Aug 2026 08:20:44 +0000",
+    "fetchedAt": "2026-08-24T08:11:35.458Z",
+    "status": "draft"
+  },
+  {
+    "id": "gs278w",
+    "title": "Mathematics in the age of AI",
+    "source": "Hacker News AI",
+    "lang": "en",
+    "url": "https://arxiv.org/abs/2608.16753",
+    "summary": "Article URL: https://arxiv.org/abs/2608.16753 Comments URL: https://news.ycombinator.com/item?id=49362728 Points: 208 # ",
+    "category": "business",
+    "publishedAt": "Wed, 19 Aug 2026 15:14:25 +0000",
+    "fetchedAt": "2026-08-24T08:11:35.458Z",
+    "status": "draft"
+  },
+  {
+    "id": "7bo0l",
+    "title": "AI boosted homework scores, then exam scores dropped: study",
+    "source": "Hacker News AI",
+    "lang": "en",
+    "url": "https://www.economist.com/graphic-detail/2026/08/18/does-ai-stop-children-from-learning",
+    "summary": "https://archive.is/w1eng https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6868618 Comments URL: https://news.ycombina",
+    "category": "business",
+    "publishedAt": "Wed, 19 Aug 2026 06:13:31 +0000",
+    "fetchedAt": "2026-08-24T08:11:35.458Z",
+    "status": "draft"
+  },
+  {
+    "id": "sp03im",
+    "title": "AI usage patterns in software teams",
+    "source": "Hacker News AI",
+    "lang": "en",
+    "url": "https://linear.app/data",
+    "summary": "Article URL: https://linear.app/data Comments URL: https://news.ycombinator.com/item?id=49353432 Points: 199 # Comments:",
+    "category": "business",
+    "publishedAt": "Tue, 18 Aug 2026 22:08:07 +0000",
+    "fetchedAt": "2026-08-24T08:11:35.459Z",
+    "status": "draft"
+  },
+  {
+    "id": "y17c4z",
+    "title": "Israel creates fake think tank in likely attempt to dupe AI chatbots",
+    "source": "Hacker News AI",
+    "lang": "en",
+    "url": "https://responsiblestatecraft.org/israel-influence-chatgpt/",
+    "summary": "Article URL: https://responsiblestatecraft.org/israel-influence-chatgpt/ Comments URL: https://news.ycombinator.com/item",
+    "category": "llm",
+    "publishedAt": "Mon, 17 Aug 2026 20:46:10 +0000",
+    "fetchedAt": "2026-08-24T08:11:35.459Z",
+    "status": "draft"
+  },
+  {
+    "id": "juvd2z",
+    "title": "AI;DR (AI; Didn't Read)",
+    "source": "Hacker News AI",
+    "lang": "en",
+    "url": "https://www.rickmanelius.com/p/aidr-ai-didnt-read",
+    "summary": "Article URL: https://www.rickmanelius.com/p/aidr-ai-didnt-read Comments URL: https://news.ycombinator.com/item?id=493365",
+    "category": "business",
+    "publishedAt": "Mon, 17 Aug 2026 19:47:15 +0000",
+    "fetchedAt": "2026-08-24T08:11:35.459Z",
+    "status": "draft"
+  },
+  {
+    "id": "309w4d",
+    "title": "AirTag reveals Amazon is trashing rare books to train AI",
+    "source": "Hacker News AI",
+    "lang": "en",
+    "url": "https://arstechnica.com/tech-policy/2026/08/hidden-airtag-reveals-amazon-is-trashing-rare-books-to-train-ai/",
+    "summary": "Article URL: https://arstechnica.com/tech-policy/2026/08/hidden-airtag-reveals-amazon-is-trashing-rare-books-to-train-ai",
+    "category": "business",
+    "publishedAt": "Mon, 17 Aug 2026 19:06:11 +0000",
+    "fetchedAt": "2026-08-24T08:11:35.459Z",
+    "status": "draft"
+  },
+  {
+    "id": "ysyofa",
+    "title": "Launch HN: Speko (YC S26) – OpenRouter for Voice AI",
+    "source": "Hacker News AI",
+    "lang": "en",
+    "url": "https://speko.ai/",
+    "summary": "Hi HN! I'm Bek, founder of Speko, a platform that finds an optimal combination of speech-to-text, LLM, and text-to-speec",
+    "category": "business",
+    "publishedAt": "Mon, 17 Aug 2026 15:36:18 +0000",
+    "fetchedAt": "2026-08-24T08:11:35.459Z",
+    "status": "draft"
+  },
+  {
+    "id": "aaz70w",
+    "title": "Decawork",
+    "source": "Product Hunt AI",
+    "lang": "en",
+    "url": "https://www.producthunt.com/products/decawork",
+    "summary": "Discussion | Link",
+    "category": "business",
+    "publishedAt": "2026-08-23T05:41:57.000Z",
+    "fetchedAt": "2026-08-24T08:11:36.172Z",
+    "status": "draft"
+  },
+  {
+    "id": "r6mxfd",
+    "title": "Cortex by SKYNETLAB",
+    "source": "Product Hunt AI",
+    "lang": "en",
+    "url": "https://www.producthunt.com/products/cortex-by-skynetlab",
+    "summary": "Discussion | Link",
+    "category": "business",
+    "publishedAt": "2026-08-23T11:18:32.000Z",
+    "fetchedAt": "2026-08-24T08:11:36.172Z",
+    "status": "draft"
+  },
+  {
+    "id": "1c9kyf",
+    "title": "Trama",
+    "source": "Product Hunt AI",
+    "lang": "en",
+    "url": "https://www.producthunt.com/products/trama-mac-automation-in-plain-language",
+    "summary": "Discussion | Link",
+    "category": "business",
+    "publishedAt": "2026-08-22T19:15:06.000Z",
+    "fetchedAt": "2026-08-24T08:11:36.172Z",
+    "status": "draft"
+  },
+  {
+    "id": "z6ur3l",
+    "title": "Navigara",
+    "source": "Product Hunt AI",
+    "lang": "en",
+    "url": "https://www.producthunt.com/products/navigara",
+    "summary": "Discussion | Link",
+    "category": "business",
+    "publishedAt": "2026-08-13T22:04:24.000Z",
+    "fetchedAt": "2026-08-24T08:11:36.172Z",
+    "status": "draft"
+  },
+  {
+    "id": "1x3aer",
+    "title": "Offloop",
+    "source": "Product Hunt AI",
+    "lang": "en",
+    "url": "https://www.producthunt.com/products/offloop",
+    "summary": "Discussion | Link",
+    "category": "business",
+    "publishedAt": "2026-08-22T15:50:38.000Z",
+    "fetchedAt": "2026-08-24T08:11:36.172Z",
+    "status": "draft"
+  },
+  {
+    "id": "hoegz3",
+    "title": "Phoenix",
+    "source": "Product Hunt AI",
+    "lang": "en",
+    "url": "https://www.producthunt.com/products/phoenix-10",
+    "summary": "Discussion | Link",
+    "category": "business",
+    "publishedAt": "2026-08-20T09:32:29.000Z",
+    "fetchedAt": "2026-08-24T08:11:36.172Z",
+    "status": "draft"
+  },
+  {
+    "id": "oye8xi",
+    "title": "Dropstone",
+    "source": "Product Hunt AI",
+    "lang": "en",
+    "url": "https://www.producthunt.com/products/dropstone-2",
+    "summary": "Discussion | Link",
+    "category": "business",
+    "publishedAt": "2026-08-23T17:33:30.000Z",
+    "fetchedAt": "2026-08-24T08:11:36.172Z",
+    "status": "draft"
+  },
+  {
+    "id": "jxjc7r",
+    "title": "Antigravity Remote Control",
+    "source": "Product Hunt AI",
+    "lang": "en",
+    "url": "https://www.producthunt.com/products/google-antigravity",
+    "summary": "Discussion | Link",
+    "category": "business",
+    "publishedAt": "2026-08-24T05:00:08.000Z",
+    "fetchedAt": "2026-08-24T08:11:36.172Z",
+    "status": "draft"
+  },
+  {
+    "id": "8b1xfs",
+    "title": "Contrive",
+    "source": "Product Hunt AI",
+    "lang": "en",
+    "url": "https://www.producthunt.com/products/contrive",
+    "summary": "Discussion | Link",
+    "category": "business",
+    "publishedAt": "2026-08-23T08:19:57.000Z",
+    "fetchedAt": "2026-08-24T08:11:36.172Z",
+    "status": "draft"
+  },
+  {
+    "id": "x5wlfo",
+    "title": "Construct Computer",
+    "source": "Product Hunt AI",
+    "lang": "en",
+    "url": "https://www.producthunt.com/products/construct-computer",
+    "summary": "Discussion | Link",
+    "category": "business",
+    "publishedAt": "2026-07-02T05:08:02.000Z",
+    "fetchedAt": "2026-08-24T08:11:36.173Z",
+    "status": "draft"
+  },
+  {
+    "id": "1khx7d",
+    "title": "FetchSandbox MCP",
+    "source": "Product Hunt AI",
+    "lang": "en",
+    "url": "https://www.producthunt.com/products/fetchsandbox",
+    "summary": "Discussion | Link",
+    "category": "business",
+    "publishedAt": "2026-08-14T21:18:26.000Z",
+    "fetchedAt": "2026-08-24T08:11:36.173Z",
+    "status": "draft"
+  },
+  {
+    "id": "k048eu",
+    "title": "Claude Academy",
+    "source": "Product Hunt AI",
+    "lang": "en",
+    "url": "https://www.producthunt.com/products/claude-academy",
+    "summary": "Discussion | Link",
+    "category": "llm",
+    "publishedAt": "2026-08-21T00:47:05.000Z",
+    "fetchedAt": "2026-08-24T08:11:36.173Z",
+    "status": "draft"
+  },
+  {
+    "id": "1nmiw",
+    "title": "Zero",
+    "source": "Product Hunt AI",
+    "lang": "en",
+    "url": "https://www.producthunt.com/products/zero-15",
+    "summary": "Discussion | Link",
+    "category": "business",
+    "publishedAt": "2026-08-20T09:01:53.000Z",
+    "fetchedAt": "2026-08-24T08:11:36.173Z",
+    "status": "draft"
+  },
+  {
+    "id": "2yi1pf",
+    "title": "Port Radar for macOS",
+    "source": "Product Hunt AI",
+    "lang": "en",
+    "url": "https://www.producthunt.com/products/port-radar-for-macos",
+    "summary": "Discussion | Link",
+    "category": "business",
+    "publishedAt": "2026-08-21T20:35:10.000Z",
+    "fetchedAt": "2026-08-24T08:11:36.173Z",
+    "status": "draft"
+  },
+  {
+    "id": "cqwufw",
+    "title": "Pocket by Meta",
+    "source": "Product Hunt AI",
+    "lang": "en",
+    "url": "https://www.producthunt.com/products/pocket-by-meta",
+    "summary": "Discussion | Link",
+    "category": "business",
+    "publishedAt": "2026-08-21T03:32:59.000Z",
+    "fetchedAt": "2026-08-24T08:11:36.173Z",
+    "status": "draft"
+  },
+  {
+    "id": "kthu3g",
+    "title": "Introducing AI Futures",
+    "source": "OpenAI Blog",
+    "lang": "en",
+    "url": "https://openai.com/index/introducing-ai-futures",
+    "summary": "Introducing AI Futures, a new OpenAI blog exploring how transformative AI could reshape power, governance, the economy, ",
+    "category": "llm",
+    "publishedAt": "Thu, 20 Aug 2026 07:00:00 GMT",
+    "fetchedAt": "2026-08-24T08:11:36.606Z",
+    "status": "draft"
+  },
+  {
+    "id": "9eies1",
+    "title": "Stampli cuts launch hours by 68% using ChatGPT Work",
+    "source": "OpenAI Blog",
+    "lang": "en",
+    "url": "https://openai.com/index/stampli",
+    "summary": "With a fixed deadline and design resources committed elsewhere, Stampli used Codex and ChatGPT Work to compress weeks of",
+    "category": "llm",
+    "publishedAt": "Thu, 20 Aug 2026 00:00:00 GMT",
+    "fetchedAt": "2026-08-24T08:11:36.606Z",
+    "status": "draft"
+  },
+  {
+    "id": "1q7aj8",
+    "title": "Offering Zero Data Retention for frontier models",
+    "source": "OpenAI Blog",
+    "lang": "en",
+    "url": "https://openai.com/index/offering-zero-data-retention-for-frontier-models",
+    "summary": "OpenAI reaffirms Zero Data Retention for eligible API customers and previews Private Safety Processing for advanced AI s",
+    "category": "llm",
+    "publishedAt": "Wed, 19 Aug 2026 19:00:00 GMT",
+    "fetchedAt": "2026-08-24T08:11:36.607Z",
+    "status": "draft"
+  },
+  {
+    "id": "ta8sjn",
+    "title": "Replit expands access to software creation with GPT-5.6 Luna",
+    "source": "OpenAI Blog",
+    "lang": "en",
+    "url": "https://openai.com/index/replit",
+    "summary": "Replit introduces Free Mode, powered by GPT-5.6 Luna, so anyone can turn ideas into working software without worrying ab",
+    "category": "llm",
+    "publishedAt": "Wed, 19 Aug 2026 07:00:00 GMT",
+    "fetchedAt": "2026-08-24T08:11:36.607Z",
+    "status": "draft"
+  },
+  {
+    "id": "kj4tk1",
+    "title": "ChatGPT Ads expands across Europe",
+    "source": "OpenAI Blog",
+    "lang": "en",
+    "url": "https://openai.com/index/chatgpt-ads-expands-across-europe",
+    "summary": "ChatGPT Ads is expanding to 31 European markets. Learn how advertisers can reach people as they explore, compare options",
+    "category": "llm",
+    "publishedAt": "Tue, 18 Aug 2026 22:00:00 GMT",
+    "fetchedAt": "2026-08-24T08:11:36.607Z",
+    "status": "draft"
+  },
+  {
+    "id": "za5r0j",
+    "title": "Strengthening democratic oversight in national security",
+    "source": "OpenAI Blog",
+    "lang": "en",
+    "url": "https://openai.com/index/strengthening-democratic-oversight-in-national-security",
+    "summary": "OpenAI launches an initiative to strengthen democratic oversight of AI in national security, supporting government insti",
+    "category": "llm",
+    "publishedAt": "Tue, 18 Aug 2026 19:00:00 GMT",
+    "fetchedAt": "2026-08-24T08:11:36.607Z",
+    "status": "draft"
+  },
+  {
+    "id": "q2ofw6",
+    "title": "Partnering with CodeAI to prepare the first AI generation",
+    "source": "OpenAI Blog",
+    "lang": "en",
+    "url": "https://openai.com/index/partnering-with-codeai",
+    "summary": "OpenAI and CodeAI are partnering to help students build AI literacy, think critically about AI, and develop the skills t",
+    "category": "llm",
+    "publishedAt": "Tue, 18 Aug 2026 11:00:00 GMT",
+    "fetchedAt": "2026-08-24T08:11:36.607Z",
+    "status": "draft"
+  },
+  {
+    "id": "10mf0q",
+    "title": "Pacing model development in an era of cyber-critical capabilities",
+    "source": "OpenAI Blog",
+    "lang": "en",
+    "url": "https://openai.com/index/pacing-model-development-cyber-capabilities",
+    "summary": "OpenAI is strengthening monitoring, alignment, and security for frontier AI models. See how new safeguards are guiding t",
+    "category": "llm",
+    "publishedAt": "Tue, 18 Aug 2026 11:00:00 GMT",
+    "fetchedAt": "2026-08-24T08:11:36.607Z",
+    "status": "draft"
+  },
+  {
+    "id": "uwpfvb",
+    "title": "Introducing ChatGPT for Teens: Built for learning, backed by protections",
+    "source": "OpenAI Blog",
+    "lang": "en",
+    "url": "https://openai.com/index/chatgpt-for-teens",
+    "summary": "ChatGPT for Teens helps teens learn, think critically, and use AI with confidence, with stronger built-in protections, h",
+    "category": "llm",
+    "publishedAt": "Tue, 18 Aug 2026 11:00:00 GMT",
+    "fetchedAt": "2026-08-24T08:11:36.607Z",
+    "status": "draft"
+  },
+  {
+    "id": "p8lux3",
+    "title": "How NVIDIA scales expertise with ChatGPT Work",
+    "source": "OpenAI Blog",
+    "lang": "en",
+    "url": "https://openai.com/index/nvidia/chatgpt-work",
+    "summary": "NVIDIA teams use ChatGPT Work to reduce manual tasks, connect fast-moving signals, and scale successful workflows global",
+    "category": "llm",
+    "publishedAt": "Tue, 18 Aug 2026 00:00:00 GMT",
+    "fetchedAt": "2026-08-24T08:11:36.607Z",
+    "status": "draft"
+  }
+]
+
+export function getNewsDrafts(): NewsDraft[] {
+  return newsDrafts
+}

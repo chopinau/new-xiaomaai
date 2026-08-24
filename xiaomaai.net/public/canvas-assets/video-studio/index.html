@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>视频工作室 · 小马AI</title>
+  <link rel="stylesheet" href="../css/base.css" />
+  <link rel="stylesheet" href="studio.css" />
+</head>
+<body>
+  <header class="vs-header">
+    <div class="vs-header-left">
+      <span class="vs-logo">🎬</span>
+      <h1>视频工作室</h1>
+    </div>
+    <div class="vs-header-right">
+      <button id="vs-refresh" class="vs-btn">↻ 刷新素材</button>
+      <button id="vs-manage-agent" class="vs-btn vs-btn-ghost">⚙️ 智能体</button>
+    </div>
+  </header>
+
+  <!-- 预设智能体栏（默认折叠） -->
+  <div id="vs-agent-bar" class="vs-agent-bar vs-agent-bar-collapsed">
+    <div id="vs-agent-categories" class="vs-agent-categories"></div>
+    <div id="vs-agent-chips" class="vs-agent-chips"></div>
+    <div id="vs-agent-info" class="vs-agent-info" style="display:none"></div>
+    <div class="vs-agent-actions">
+      <button id="vs-clear-agent" class="vs-btn vs-btn-ghost" style="display:none">✕ 取消智能体</button>
+    </div>
+  </div>
+
+  <main class="vs-main">
+    <!-- 左：素材库 -->
+    <aside class="vs-assets-panel">
+      <div class="vs-panel-header">
+        <h2>📁 素材库</h2>
+        <div style="display:flex;gap:4px;align-items:center">
+          <span id="vs-asset-count" class="vs-count">0</span>
+        </div>
+      </div>
+      <div class="vs-panel-tools">
+        <select id="vs-asset-filter">
+          <option value="all">全部</option>
+          <option value="generate">生图节点</option>
+          <option value="image">本地图</option>
+          <option value="sketch">分层渲染</option>
+        </select>
+      </div>
+      <!-- 任务池(购物车)缩略图墙 - 始终可见 -->
+      <div id="vs-task-pool" class="vs-task-pool">
+        <div class="vs-task-pool-header">
+          <span>🛒 任务池 <span id="vs-task-pool-count" class="vs-count">0</span></span>
+          <button id="vs-task-pool-clear" class="vs-btn vs-btn-ghost vs-btn-xs">清空</button>
+        </div>
+        <div id="vs-task-pool-grid" class="vs-task-pool-grid">
+          <div class="vs-empty-small" style="grid-column:1/-1;padding:8px 0;color:var(--vs-text-muted)">点击素材的 ➕ 按钮添加任务</div>
+        </div>
+      </div>
+      <div id="vs-asset-grid" class="vs-asset-grid">
+        <div class="vs-empty">暂无素材<br/><span>请先在画布中生成或上传图片</span></div>
+      </div>
+    </aside>
+
+    <!-- 中：预览区 -->
+    <section class="vs-preview-panel">
+      <div class="vs-panel-header">
+        <h2>🎥 视频预览</h2>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span id="vs-task-pool-badge" class="vs-count" title="任务池任务数">🛒 0</span>
+          <button id="vs-task-pool-run" class="vs-btn vs-btn-primary vs-btn-sm" disabled>▶ 开始生成</button>
+        </div>
+      </div>
+      <!-- 模式 + 数量 选择器 -->
+      <div class="vs-mode-toolbar">
+        <div class="vs-mode-group">
+          <span class="vs-mode-label">模式</span>
+          <div class="vs-mode-tabs" id="vs-mode-tabs">
+            <button class="vs-mode-tab active" data-mode="single">🎯 单视频</button>
+            <button class="vs-mode-tab" data-mode="batch">📦 批量</button>
+            <button class="vs-mode-tab" data-mode="agent">🤖 智能体</button>
+          </div>
+        </div>
+        <div class="vs-mode-group" id="vs-batch-count-group" style="display:none">
+          <span class="vs-mode-label">数量</span>
+          <div class="vs-num-stepper">
+            <button class="vs-num-btn" id="vs-num-minus">−</button>
+            <input type="number" id="vs-batch-num" value="1" min="1" max="5" />
+            <button class="vs-num-btn" id="vs-num-plus">+</button>
+          </div>
+        </div>
+      </div>
+      <div id="vs-preview-stage" class="vs-preview-stage">
+        <div class="vs-empty-large">
+          <span>👈 从素材库选一张图<br/>输入提示词<br/>点"生成视频"</span>
+        </div>
+      </div>
+      <div class="vs-preview-toolbar">
+        <button id="vs-download" class="vs-btn vs-btn-primary" disabled>⤓ 下载视频</button>
+        <a id="vs-task-link" href="#" target="_blank" class="vs-btn vs-btn-link" style="display:none">查看小马AI 任务 →</a>
+      </div>
+    </section>
+
+    <!-- 右：参数面板 + 历史 -->
+    <aside class="vs-params-panel">
+      <div class="vs-panel-header">
+        <h2>⚙️ 生成参数</h2>
+      </div>
+      <div class="vs-form">
+        <label class="vs-field">
+          <span>视频模型</span>
+          <select id="vs-model">
+            <optgroup label="万相（阿里）">
+              <option value="wan2.7-shouweizhen">Wanxiang 2.7 首尾帧 ⭐</option>
+              <option value="wan2.7-cankaosheng">Wanxiang 2.7 参考图</option>
+              <option value="wan2.6-shouweizhen">Wanxiang 2.6 首尾帧</option>
+              <option value="wan2.6-cankaosheng">Wanxiang 2.6 参考图</option>
+            </optgroup>
+            <optgroup label="Seedance（字节跳动）">
+              <option value="kwvideo-v2">Seedance 2.0 ⭐</option>
+              <option value="doubao-seedance-1-5-pro-251215">即梦 1.5 Pro 首尾帧 ⭐</option>
+            </optgroup>
+            <optgroup label="Sora（OpenAI）">
+              <option value="sora-2">Sora 2 ⭐</option>
+            </optgroup>
+            <optgroup label="可灵（快手）">
+              <option value="kling-v3-video">Kling V3 视频 ⭐</option>
+              <option value="kling-o3-pro">Kling O3 Pro</option>
+              <option value="kling-v2-6">Kling 2.6 Pro</option>
+              <option value="kling-motion-control">Kling 动作控制</option>
+              <option value="kling-avatar-image2video">Kling 数字人</option>
+            </optgroup>
+            <optgroup label="海螺（MiniMax）">
+              <option value="hailuo-2.3">Hailuo 2.3 ⭐</option>
+            </optgroup>
+            <optgroup label="Google">
+              <option value="veo3.1-4k">Veo 3.1 4K 首尾帧 ⭐</option>
+              <option value="veo3.1">Veo 3.1</option>
+              <option value="veo3.1-lite">Veo 3.1 Lite</option>
+            </optgroup>
+            <optgroup label="PixVerse">
+              <option value="pixverse-v5.6-r2v">Pix V5.6 参考图 ⭐</option>
+              <option value="pixverse-v5.6-shouweizhen">Pix V5.6 首尾帧</option>
+              <option value="pixverse-c1-shouweizhen">Pix C1 首尾帧</option>
+              <option value="pixverse-c1-cankaosheng">Pix C1 参考图</option>
+            </optgroup>
+            <optgroup label="Vidu">
+              <option value="viduq2-cankaosheng">Vidu Q2 参考图 ⭐</option>
+              <option value="vidu-jieshuoman">Vidu 解说漫画</option>
+            </optgroup>
+            <optgroup label="其他">
+              <option value="grok-video-3">Grok Video 3</option>
+              <option value="grok-imagine-video-1.5-preview">Grok Imagine Video 1.5</option>
+            </optgroup>
+          </select>
+        </label>
+
+        <label class="vs-field">
+          <span>画面比例</span>
+          <select id="vs-aspect">
+            <option value="16:9">16:9 横屏</option>
+            <option value="9:16">9:16 竖屏</option>
+            <option value="1:1">1:1 方形</option>
+            <option value="4:3">4:3</option>
+            <option value="3:4">3:4</option>
+          </select>
+        </label>
+
+        <label class="vs-field">
+          <span>时长</span>
+          <select id="vs-duration">
+            <option value="5">5 秒</option>
+            <option value="6">6 秒</option>
+            <option value="9">9 秒</option>
+            <option value="10">10 秒</option>
+            <option value="12">12 秒</option>
+            <option value="15">15 秒</option>
+          </select>
+        </label>
+
+        <label class="vs-field">
+          <span>分辨率</span>
+          <select id="vs-resolution">
+            <option value="480P">480P</option>
+            <option value="720P">720P</option>
+            <option value="1080P">1080P</option>
+          </select>
+        </label>
+
+        <label class="vs-field">
+          <span>生成质量</span>
+          <select id="vs-quality">
+            <option value="standard">高品质</option>
+            <option value="fast">快速</option>
+          </select>
+        </label>
+
+        <label class="vs-field" id="vs-sound-field" style="display:none">
+          <span>音频</span>
+          <select id="vs-sound">
+            <option value="true">有声</option>
+            <option value="false">无声</option>
+          </select>
+        </label>
+
+        <label class="vs-field">
+          <span>提示词（镜头运动 / 动作描述）</span>
+          <textarea id="vs-prompt" rows="4" placeholder="例：镜头缓缓推进，主人公转身微笑，阳光从左侧照进来"></textarea>
+          <div id="vs-agent-suffix" class="vs-agent-suffix"></div>
+          <div id="vs-ref-prompts" class="vs-ref-prompts"></div>
+        </label>
+
+        <button id="vs-generate" class="vs-btn vs-btn-primary vs-btn-block" disabled>🎬 生成视频</button>
+        <div id="vs-status" class="vs-status"></div>
+      </div>
+
+      <div class="vs-panel-header" style="margin-top: 24px;">
+        <h2>📜 历史记录</h2>
+        <button id="vs-open-history" class="vs-btn vs-btn-ghost vs-btn-xs">展开</button>
+      </div>
+      <div id="vs-history-mini" class="vs-history-mini">
+        <div class="vs-empty-small">点击"展开"查看历史</div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- 下载弹窗 -->
+  <div id="vs-download-modal" class="vs-modal" style="display:none">
+    <div class="vs-modal-overlay"></div>
+    <div class="vs-modal-content">
+      <div class="vs-modal-header">
+        <h3>⤓ 下载视频</h3>
+        <button class="vs-modal-close" id="vs-dl-close">✕</button>
+      </div>
+      <div class="vs-modal-body">
+        <div id="vs-dl-preview" class="vs-dl-preview"></div>
+        <div class="vs-dl-info">
+          <label class="vs-dl-field">
+            <span>文件名</span>
+            <input id="vs-dl-filename" type="text" class="vs-dl-input" />
+          </label>
+          <div id="vs-dl-meta" class="vs-dl-meta"></div>
+        </div>
+      </div>
+      <div class="vs-modal-footer">
+        <button id="vs-dl-share" class="vs-btn">📤 分享到社区</button>
+        <button id="vs-dl-confirm" class="vs-btn vs-btn-primary">⤓ 下载</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 历史记录弹窗 -->
+  <div id="vs-history-modal" class="vs-modal" style="display:none">
+    <div class="vs-modal-overlay"></div>
+    <div class="vs-modal-content vs-modal-history">
+      <div class="vs-modal-header">
+        <h3>📜 历史记录</h3>
+        <div style="display:flex;gap:8px;align-items:center">
+          <button id="vs-clear-history" class="vs-btn vs-btn-ghost vs-btn-xs">清空</button>
+          <button class="vs-modal-close" id="vs-history-close">✕</button>
+        </div>
+      </div>
+      <div class="vs-history-tools">
+        <input id="vs-history-search" class="vs-history-search" type="text" placeholder="🔍 搜索提示词或模型..." />
+        <div id="vs-history-filters" class="vs-history-filters">
+          <button class="vs-hf-btn active" data-filter="all">全部</button>
+          <button class="vs-hf-btn" data-filter="completed">✅ 完成</button>
+          <button class="vs-hf-btn" data-filter="running">⏳ 进行中</button>
+          <button class="vs-hf-btn" data-filter="failed">❌ 失败</button>
+        </div>
+      </div>
+      <div id="vs-history-list" class="vs-history-list">
+        <div class="vs-empty-small">暂无历史</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="vs-toast" class="vs-toast"></div>
+
+  <script src="studio.js"></script>
+</body>
+</html>

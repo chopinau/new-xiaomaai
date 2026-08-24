@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>小马AI画布</title>
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/landing.css">
+</head>
+<body>
+  <div id="landingOverlay" class="landing-overlay">
+    <div class="landing-card">
+      <img class="landing-logo" src="./assets/ai-canvas-logo.png" alt="小马AI画布">
+      <div class="landing-title">小马AI画布</div>
+      <div class="landing-subtitle">配置模型后进入新版无限画布</div>
+
+      <form id="landingForm">
+        <div id="presetBar" class="preset-bar">
+          <select class="preset-select" id="presetSelect" onchange="onPresetChange(this.value)">
+            <option value="">选择预设</option>
+          </select>
+          <button type="button" class="preset-btn" onclick="saveCurrentAsPreset()">保存</button>
+          <button type="button" class="preset-btn danger" onclick="deleteSelectedPreset()">删除</button>
+        </div>
+
+        <div class="landing-field">
+          <label class="landing-label">生图模型基址</label>
+          <input class="landing-input" type="text" id="landingBaseUrl" placeholder="小马AI默认地址" value="小马AI默认地址" readonly>
+        </div>
+
+        <div class="landing-field">
+          <label class="landing-label">生图 API Key</label>
+          <input class="landing-input" type="password" id="landingApiKey" required>
+        </div>
+
+        <button type="button" class="landing-test-btn" id="landingTestBtn" onclick="testApiConnection()">测试生图连接</button>
+        <div id="landingTestResult" class="landing-test-result" style="display:none"></div>
+
+        <div id="modelSelectWrap" class="landing-field" style="display:none">
+          <label class="landing-label">生图模型</label>
+          <select class="landing-select" id="landingModelSelect"></select>
+        </div>
+
+        <div class="reverse-config">
+          <div class="reverse-config-toggle" onclick="toggleReverseConfig()">
+            <div class="reverse-config-title">反推 / 智能体文本模型</div>
+            <div id="reverseConfigArrow" class="reverse-config-arrow">▼</div>
+          </div>
+          <div id="reverseConfigPanel" class="reverse-config-panel">
+            <div class="landing-field compact">
+              <label class="landing-label small">文本模型基址</label>
+              <input class="landing-input compact" type="text" id="landingReverseBase" placeholder="默认沿用生图基址">
+            </div>
+            <div class="landing-field compact">
+              <label class="landing-label small">文本模型 API Key</label>
+              <input class="landing-input compact" type="password" id="landingReverseKey" placeholder="默认沿用生图 Key">
+            </div>
+            <button type="button" class="landing-test-btn compact" id="reverseTestBtn" onclick="testReverseConnection()">检测文本模型</button>
+            <div id="reverseTestResult" class="landing-test-result" style="display:none"></div>
+            <div class="landing-field compact" id="reverseModelSelectWrap" style="display:none">
+              <label class="landing-label small">文本模型</label>
+              <select class="landing-select" id="landingReverseModelSelect"></select>
+            </div>
+          </div>
+        </div>
+
+        <div class="api-required-hint">
+          <div class="api-qrcode">
+            <img src="/助手号二维码.jpg" alt="客服二维码" class="qrcode-image">
+          </div>
+          <div class="api-hint-text">
+            <div class="api-hint-title">需要API Key？</div>
+            <div class="api-hint-desc">请扫描上方二维码联系客服获取</div>
+          </div>
+        </div>
+
+        <div class="landing-remember">
+          <input class="landing-checkbox" type="checkbox" id="landingRemember" checked>
+          <label for="landingRemember">记住配置到本机</label>
+        </div>
+
+        <button class="landing-submit" type="submit">进入新版画布</button>
+      </form>
+
+      <div class="landing-privacy">你的信息仅保存在本机浏览器或桌面 App 内</div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="./js/safe-storage.js"></script>
+  <script src="./js/config.js"></script>
+  <script src="./js/landing.js"></script>
+  <script>
+    function escHtml(str) {
+      return String(str || '').replace(/[&<>'"]/g, ch => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;'
+      }[ch]));
+    }
+
+    function toast(msg, type = '', duration = 3500) {
+      const t = document.getElementById('toast');
+      if (!t) return;
+      t.textContent = msg;
+      t.className = 'toast' + (type ? ' ' + type : '');
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), duration);
+    }
+
+    (function bootLanding() {
+      initPresets();
+      document.getElementById('landingBaseUrl').value = '小马AI默认地址';
+      document.getElementById('landingApiKey').value = '';
+      document.getElementById('landingRemember').checked = true;
+
+      const availableModels = loadAvailableImageModels();
+      const savedModel = getSelectedImageModel();
+      if (savedModel || availableModels.length) {
+        const modelSelect = document.getElementById('landingModelSelect');
+        const models = availableModels.length ? availableModels : [savedModel];
+        modelSelect.innerHTML = models
+          .filter(Boolean)
+          .map(model => `<option value="${escHtml(model)}">${escHtml(model)}</option>`)
+          .join('');
+        if (savedModel) modelSelect.value = savedModel;
+        document.getElementById('modelSelectWrap').style.display = '';
+      }
+      document.getElementById('landingModelSelect')?.addEventListener('change', e => {
+        if (e.target.value) setSelectedImageModel(e.target.value);
+      });
+
+      const savedReverseBase = storageGet(REVERSE_BASE_STORAGE);
+      const savedReverseKey = storageGet(REVERSE_KEY_STORAGE);
+      const availableReverseModels = loadAvailableReverseModels();
+      const savedReverseModel = getSelectedTextModel();
+      document.getElementById('landingReverseBase').value = '';
+      document.getElementById('landingReverseKey').value = '';
+      if (savedReverseModel || availableReverseModels.length) {
+        const reverseModelSelect = document.getElementById('landingReverseModelSelect');
+        const models = availableReverseModels.length ? availableReverseModels : [savedReverseModel];
+        reverseModelSelect.innerHTML = models
+          .filter(Boolean)
+          .map(model => `<option value="${escHtml(model)}">${escHtml(model)}</option>`)
+          .join('');
+        if (savedReverseModel) reverseModelSelect.value = savedReverseModel;
+        document.getElementById('reverseModelSelectWrap').style.display = '';
+      }
+      document.getElementById('landingReverseModelSelect')?.addEventListener('change', e => {
+        if (e.target.value) setSelectedTextModel(e.target.value);
+      });
+
+      document.getElementById('landingForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const displayUrl = document.getElementById('landingBaseUrl').value.trim();
+        const baseUrl = displayUrl === '小马AI默认地址' ? 'https://api.lk888.ai/api' : cleanApiBase(displayUrl);
+        const apiKey = document.getElementById('landingApiKey').value.trim();
+        const remember = document.getElementById('landingRemember').checked;
+        const reverseBase = cleanApiBase(document.getElementById('landingReverseBase').value.trim() || baseUrl);
+        const reverseKey = document.getElementById('landingReverseKey').value.trim() || apiKey;
+        const reverseModel = document.getElementById('landingReverseModelSelect')?.value || storageGet(REVERSE_MODEL_STORAGE) || '';
+        const modelSelectValue = document.getElementById('landingModelSelect')?.value || '';
+        const availableForBase = loadAvailableImageModelsForBase(baseUrl);
+        const selectedModel = availableForBase.includes(modelSelectValue)
+          ? modelSelectValue
+          : choosePreferredImageModel(availableForBase, '');
+
+        if (!baseUrl || !apiKey) {
+          toast('请先填写生图模型基址和 API Key', 'error');
+          return;
+        }
+
+        const oldBase = getApiBase();
+        const oldKey = API_KEY;
+        API_BASE = baseUrl;
+        API_KEY = apiKey;
+        REVERSE_BASE = reverseBase;
+        REVERSE_KEY = reverseKey;
+        if (reverseModel) REVERSE_MODEL = reverseModel;
+
+        if (remember) {
+          if (cleanApiBase(oldBase) !== API_BASE || oldKey !== API_KEY) clearAvailableImageModels();
+          storageSet(API_BASE_STORAGE, API_BASE);
+          storageSet(API_KEY_STORAGE, API_KEY);
+          if (selectedModel) setSelectedImageModel(selectedModel);
+          storageSet(REVERSE_BASE_STORAGE, REVERSE_BASE);
+          storageSet(REVERSE_KEY_STORAGE, REVERSE_KEY);
+          if (reverseModel) setSelectedTextModel(reverseModel);
+        } else {
+          storageRemove(API_BASE_STORAGE);
+          storageRemove(API_KEY_STORAGE);
+          storageRemove(SELECTED_IMAGE_MODEL_STORAGE);
+          storageRemove(REVERSE_BASE_STORAGE);
+          storageRemove(REVERSE_KEY_STORAGE);
+          storageRemove(REVERSE_MODEL_STORAGE);
+          storageRemove(AVAILABLE_REVERSE_MODELS_STORAGE);
+          storageRemove(AVAILABLE_REVERSE_MODELS_BASE_STORAGE);
+        }
+
+        window.location.assign(new URL('v2.html', window.location.href).href);
+      });
+    })();
+  </script>
+</body>
+</html>

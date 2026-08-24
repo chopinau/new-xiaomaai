@@ -1,0 +1,384 @@
+/* landing.css */
+
+
+/* ===== LANDING PAGE ===== */
+.landing-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 28px 20px;
+  overflow-y: auto;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.landing-card {
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 48px 40px;
+  width: 100%;
+  max-width: 420px;
+  max-height: calc(100vh - 56px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  box-shadow: 0 25px 80px rgba(0,0,0,0.25);
+}
+
+.landing-logo {
+  width: 78px;
+  height: 78px;
+  display: block;
+  margin: 0 auto 18px;
+  border-radius: 22px;
+  box-shadow: 0 18px 40px rgba(15,23,42,0.18);
+}
+
+.landing-title {
+  font-size: 28px;
+  font-weight: 800;
+  background: linear-gradient(135deg,#667eea,#764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.landing-subtitle {
+  text-align: center;
+  color: #888;
+  font-size: 14px;
+  margin-bottom: 32px;
+}
+
+.landing-field { margin-bottom: 20px; }
+.landing-field.compact { margin-bottom: 12px; }
+.preset-bar {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+.preset-select {
+  min-width: 0;
+  height: 38px;
+  border-radius: 13px;
+  border: 1px solid rgba(15,23,42,0.08);
+  background: rgba(255,255,255,0.70);
+  padding: 0 10px;
+  color: #374151;
+  font-size: 12px;
+  font-weight: 700;
+}
+.preset-btn {
+  height: 38px;
+  padding: 0 11px;
+  border-radius: 13px;
+  border: 1px solid rgba(15,23,42,0.08);
+  background: rgba(255,255,255,0.70);
+  color: #374151;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 800;
+}
+.preset-btn:hover,
+.preset-select:focus {
+  border-color: rgba(0,113,227,0.32);
+}
+.preset-btn.danger {
+  color: #b91c1c;
+}
+.landing-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 6px;
+}
+.landing-label.small {
+  font-size: 12px;
+  color: #555;
+  margin-bottom: 5px;
+}
+.landing-input,
+.landing-select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 14px;
+  outline: none;
+  background: #fafafa;
+}
+.landing-select,
+.landing-input.compact {
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+}
+.landing-select { cursor: pointer; }
+.landing-remember {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 24px;
+  font-size: 13px;
+  color: #666;
+}
+.landing-checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: #667eea;
+  cursor: pointer;
+}
+.landing-remember label { cursor: pointer; }
+.landing-submit {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg,#667eea,#764ba2);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.landing-test-btn {
+  width: 100%;
+  min-height: 40px;
+  padding: 8px 12px;
+  border-radius: 13px;
+  background: rgba(255,255,255,0.66);
+  border: 1px solid rgba(15,23,42,0.10);
+  color: #374151;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 800;
+  margin: -6px 0 10px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.72);
+}
+.landing-test-btn:hover {
+  border-color: rgba(0,113,227,0.34);
+  color: #111827;
+}
+.landing-test-btn:disabled {
+  opacity: 0.58;
+  cursor: wait;
+}
+.landing-test-result {
+  font-size: 12px;
+  font-weight: 700;
+  margin: -2px 0 14px;
+  padding: 8px 10px;
+  border-radius: 10px;
+}
+.landing-test-result.testing {
+  color: #6b7280;
+  background: rgba(107,114,128,0.08);
+}
+.landing-test-result.success {
+  color: #047857;
+  background: rgba(16,185,129,0.11);
+}
+.landing-test-result.error {
+  color: #b91c1c;
+  background: rgba(248,113,113,0.12);
+}
+.reverse-config {
+  margin-top: 20px;
+  border-top: 1px solid #eee;
+  padding-top: 16px;
+}
+.reverse-config-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+.reverse-config-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #444;
+}
+.reverse-config-arrow {
+  font-size: 12px;
+  color: #888;
+  transition: transform 0.2s;
+}
+.reverse-config-panel {
+  display: none;
+  margin-top: 12px;
+}
+.doubao-config { display: none; }
+.landing-privacy {
+  text-align: center;
+  font-size: 12px;
+  color: #bbb;
+  margin-top: 16px;
+}
+.app-shell.is-hidden,
+.is-hidden { display: none !important; }
+
+
+/* ===== Visual system refresh: Landing ===== */
+.landing-overlay {
+  background:
+    radial-gradient(circle at 14% 10%, rgba(0,113,227,0.18), transparent 30%),
+    radial-gradient(circle at 88% 14%, rgba(175,82,222,0.14), transparent 28%),
+    radial-gradient(circle at 52% 94%, rgba(90,200,250,0.16), transparent 36%),
+    linear-gradient(180deg, #fbfbfd 0%, #f4f6fb 48%, #e9edf5 100%);
+}
+.landing-card {
+  max-width: 444px;
+  padding: 42px 38px 34px;
+  border-radius: 32px;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.86), rgba(248,250,253,0.74)),
+    rgba(255,255,255,0.70);
+  border: 1px solid rgba(255,255,255,0.86);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.94),
+    0 28px 70px rgba(15,23,42,0.13),
+    0 70px 140px rgba(15,23,42,0.10);
+}
+
+.landing-card::-webkit-scrollbar {
+  width: 8px;
+}
+
+.landing-card::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.landing-card::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(15,23,42,0.16);
+}
+
+.landing-card::-webkit-scrollbar-thumb:hover {
+  background: rgba(15,23,42,0.26);
+}
+.landing-title {
+  color: #111827;
+  background: none;
+  -webkit-text-fill-color: initial;
+  font-size: 30px;
+  letter-spacing: -0.04em;
+}
+.landing-subtitle {
+  color: #7b8492;
+  font-weight: 600;
+  margin-bottom: 28px;
+}
+.landing-label {
+  color: #4b5563;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.landing-input,
+.landing-select {
+  height: 44px;
+  border-radius: 15px;
+  border: 1px solid rgba(15,23,42,0.08);
+  background: linear-gradient(180deg, rgba(255,255,255,0.90), rgba(248,250,252,0.78));
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.86);
+  transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+}
+.landing-input:focus,
+.landing-select:focus {
+  background: rgba(255,255,255,0.96);
+  border-color: rgba(0,113,227,0.42);
+  box-shadow: 0 0 0 4px rgba(0,113,227,0.10), inset 0 1px 0 rgba(255,255,255,0.92);
+}
+.landing-submit {
+  min-height: 46px;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #0a84ff, #0071e3);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.22), 0 18px 34px rgba(0,113,227,0.25);
+  transition: transform 0.16s ease, box-shadow 0.16s ease;
+}
+.landing-submit:hover {
+  transform: translateY(-1px);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.22), 0 22px 42px rgba(0,113,227,0.30);
+}
+.landing-remember {
+  color: #6b7280;
+  font-weight: 600;
+}
+.landing-checkbox {
+  accent-color: #0071e3;
+}
+.reverse-config {
+  margin-top: 22px;
+  border-top: 1px solid rgba(15,23,42,0.06);
+  padding-top: 18px;
+}
+.reverse-config-toggle {
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.55);
+  border: 1px solid rgba(255,255,255,0.72);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.82);
+}
+.reverse-config-title {
+  color: #374151;
+  font-weight: 800;
+}
+.reverse-config-panel {
+  padding: 14px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.66), rgba(247,249,252,0.56));
+  border: 1px solid rgba(255,255,255,0.72);
+}
+.landing-privacy {
+  color: #9aa3af;
+  font-weight: 600;
+}
+
+/* API Required Hint with QR Code */
+.api-required-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.66), rgba(247,249,252,0.56));
+  border: 1px solid rgba(255,255,255,0.72);
+  border-radius: 18px;
+  margin-bottom: 24px;
+}
+
+.api-qrcode {
+  width: 120px;
+  height: 120px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(15,23,42,0.12);
+  margin-bottom: 16px;
+}
+
+.qrcode-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.api-hint-text {
+  text-align: center;
+}
+
+.api-hint-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #111827;
+  margin-bottom: 6px;
+}
+
+.api-hint-desc {
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 600;
+}

@@ -1,0 +1,424 @@
+/* =============================================================================
+ * 小马AI · V2 画布 UI 增强
+ * 在不破坏现有 v2.css 基础上添加：
+ *  - 节点状态视觉（generating/done/error）
+ *  - 拖拽/hover 流畅度
+ *  - 加载动画
+ *  - 顶栏按钮统一样式
+ *  - MiniMap 视觉增强
+ *  - Agent pill 强化
+ *
+ * 创建：2026-06-30
+ * 协议：MIT
+ * ============================================================================= */
+
+/* ===== 全局动画曲线 ===== */
+:root {
+    --v2-ease: cubic-bezier(0.4, 0, 0.2, 1);
+    --v2-ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --v2-ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --v2-status-generating: #06B6D4;
+    --v2-status-done: #22C55E;
+    --v2-status-error: #EF4444;
+    --v2-status-idle: rgba(255,255,255,0.08);
+}
+
+/* ===== 节点平滑过渡 ===== */
+.v2-node {
+    transition: border-color 0.18s var(--v2-ease), box-shadow 0.18s var(--v2-ease), transform 0.12s var(--v2-ease-out) !important;
+}
+
+.v2-node:hover {
+    border-color: rgba(126, 34, 206, 0.4) !important;
+}
+
+/* ===== 节点状态视觉 ===== */
+
+/* 生成中：青色发光 + 顶部进度条 */
+.v2-node[data-status="generating"],
+.v2-node[data-status="running"] {
+    border-color: var(--v2-status-generating) !important;
+    box-shadow:
+        0 0 0 1.5px var(--v2-status-generating),
+        0 0 24px rgba(6, 182, 212, 0.4),
+        0 18px 48px rgba(0, 0, 0, 0.3) !important;
+    animation: v2-pulse-generating 1.6s var(--v2-ease) infinite;
+}
+
+@keyframes v2-pulse-generating {
+    0%, 100% { box-shadow: 0 0 0 1.5px var(--v2-status-generating), 0 0 24px rgba(6, 182, 212, 0.4), 0 18px 48px rgba(0, 0, 0, 0.3); }
+    50% { box-shadow: 0 0 0 1.5px var(--v2-status-generating), 0 0 36px rgba(6, 182, 212, 0.6), 0 18px 48px rgba(0, 0, 0, 0.3); }
+}
+
+/* 完成：绿色边框 + 一次性高亮 */
+.v2-node[data-status="done"],
+.v2-node[data-status="completed"] {
+    border-color: var(--v2-status-done) !important;
+    box-shadow:
+        0 0 0 1.5px var(--v2-status-done),
+        0 0 18px rgba(34, 197, 94, 0.3),
+        0 18px 48px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* 错误：红色边框 + 抖动 */
+.v2-node[data-status="error"] {
+    border-color: var(--v2-status-error) !important;
+    box-shadow:
+        0 0 0 1.5px var(--v2-status-error),
+        0 0 18px rgba(239, 68, 68, 0.3),
+        0 18px 48px rgba(0, 0, 0, 0.3) !important;
+    animation: v2-shake-error 0.4s var(--v2-ease) 1;
+}
+
+@keyframes v2-shake-error {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-3px); }
+    40%, 80% { transform: translateX(3px); }
+}
+
+/* ===== 选中态增强 ===== */
+.v2-node.selected {
+    border-color: rgba(236, 72, 153, 0.86) !important;
+    box-shadow:
+        0 0 0 2px rgba(236, 72, 153, 0.25),
+        0 0 32px rgba(236, 72, 153, 0.3),
+        0 22px 58px rgba(0, 0, 0, 0.4) !important;
+    transform: scale(1.005);
+}
+
+/* ===== 拖拽态 ===== */
+.v2-node.dragging {
+    transform: scale(1.02);
+    box-shadow:
+        0 0 0 1.5px rgba(236, 72, 153, 0.7),
+        0 0 28px rgba(236, 72, 153, 0.4),
+        0 26px 64px rgba(0, 0, 0, 0.5) !important;
+    z-index: 10 !important;
+    cursor: grabbing;
+}
+
+/* ===== 连线目标态 ===== */
+.v2-node.link-target {
+    border-color: rgba(34, 197, 94, 0.92) !important;
+    box-shadow:
+        0 0 0 3px rgba(34, 197, 94, 0.22),
+        0 0 28px rgba(34, 197, 94, 0.35),
+        0 22px 58px rgba(0, 0, 0, 0.4) !important;
+    transform: scale(1.01);
+}
+
+/* ===== 节点顶部进度条（生成中） ===== */
+.v2-node[data-status="generating"]::before,
+.v2-node[data-status="running"]::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--v2-status-generating), transparent);
+    background-size: 50% 100%;
+    background-repeat: no-repeat;
+    animation: v2-progress-sweep 1.4s var(--v2-ease) infinite;
+    border-radius: 18px 18px 0 0;
+    z-index: 10;
+    pointer-events: none;
+}
+
+@keyframes v2-progress-sweep {
+    0% { background-position: -50% 0; }
+    100% { background-position: 150% 0; }
+}
+
+/* ===== 节点运行状态徽章 ===== */
+.v2-node-status-badge {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    z-index: 12;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+.v2-node-status-badge.generating {
+    background: var(--v2-status-generating);
+    color: #fff;
+}
+
+.v2-node-status-badge.done,
+.v2-node-status-badge.completed {
+    background: var(--v2-status-done);
+    color: #000;
+}
+
+.v2-node-status-badge.error {
+    background: var(--v2-status-error);
+    color: #fff;
+}
+
+/* 旋转的 spinner */
+.v2-node-status-badge .spinner {
+    width: 10px;
+    height: 10px;
+    border: 1.5px solid currentColor;
+    border-top-color: transparent;
+    border-radius: 50%;
+    animation: v2-spin 0.8s linear infinite;
+}
+
+@keyframes v2-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ===== 顶栏按钮统一样式 ===== */
+.v2-header-btn {
+    transition: background 0.15s var(--v2-ease), border-color 0.15s var(--v2-ease), color 0.15s var(--v2-ease), transform 0.1s var(--v2-ease-out) !important;
+}
+
+.v2-header-btn:hover {
+    background: rgba(126, 34, 206, 0.2) !important;
+    border-color: rgba(126, 34, 206, 0.5) !important;
+    transform: translateY(-1px);
+}
+
+.v2-header-btn:active {
+    transform: translateY(0) scale(0.98);
+}
+
+/* "清空 v2" 按钮的红色太突兀 */
+.v2-header-btn.danger {
+    background: rgba(239, 68, 68, 0.08) !important;
+    border-color: rgba(239, 68, 68, 0.3) !important;
+    color: rgba(252, 165, 165, 0.95) !important;
+}
+
+.v2-header-btn.danger:hover {
+    background: rgba(239, 68, 68, 0.18) !important;
+    border-color: rgba(239, 68, 68, 0.6) !important;
+    color: #fff !important;
+}
+
+/* ===== Agent Pill 强化 ===== */
+#v2AgentPill {
+    transition: background 0.2s var(--v2-ease), color 0.2s var(--v2-ease) !important;
+    font-weight: 500 !important;
+    position: relative;
+}
+
+#v2AgentPill::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    margin-right: 6px;
+    box-shadow: 0 0 6px currentColor;
+    animation: v2-agent-pulse 1.5s var(--v2-ease) infinite;
+    vertical-align: middle;
+}
+
+@keyframes v2-agent-pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(1.3); }
+}
+
+/* ===== MiniMap 视觉增强 ===== */
+.v2-minimap {
+    border-radius: 12px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4) !important;
+    border: 1px solid rgba(126, 34, 206, 0.3) !important;
+    overflow: hidden;
+}
+
+.v2-minimap-stage {
+    border-radius: 12px !important;
+}
+
+/* ===== Toast 增强 ===== */
+.toast {
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    border-radius: 10px !important;
+    font-weight: 500;
+    animation: v2-toast-in 0.25s var(--v2-ease-bounce) !important;
+}
+
+@keyframes v2-toast-in {
+    from { opacity: 0; transform: translateX(-50%) translateY(20px) scale(0.9); }
+    to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+
+/* ===== 顶部工具栏圆角按钮 ===== */
+.v2-toolbar button {
+    transition: background 0.15s var(--v2-ease), border-color 0.15s var(--v2-ease), transform 0.1s var(--v2-ease-out) !important;
+}
+
+.v2-toolbar button:hover {
+    background: rgba(126, 34, 206, 0.2) !important;
+    border-color: rgba(126, 34, 206, 0.5) !important;
+    transform: scale(1.05);
+}
+
+.v2-toolbar button:active {
+    transform: scale(0.95);
+}
+
+/* ===== 节点删除按钮 hover 效果增强 ===== */
+.v2-node-delete {
+    transition: background 0.15s var(--v2-ease), color 0.15s var(--v2-ease), transform 0.1s var(--v2-ease-out) !important;
+}
+
+.v2-node-delete:hover {
+    transform: scale(1.15) rotate(90deg);
+}
+
+/* ===== Header 渐变描边（让 Agent pill 看起来更高级） ===== */
+.v2-shell {
+    background:
+        radial-gradient(circle at 0% 0%, rgba(126, 34, 206, 0.05), transparent 50%),
+        radial-gradient(circle at 100% 100%, rgba(6, 182, 212, 0.04), transparent 50%);
+}
+
+/* ===== 节点标题 hover 颜色变化 ===== */
+.v2-node-title {
+    transition: color 0.15s var(--v2-ease) !important;
+}
+
+.v2-node:hover .v2-node-title {
+    color: #fff !important;
+}
+
+/* ===== 键盘快捷键提示（如果存在 help-tip） ===== */
+.v2-canvas-help-tip {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    padding: 8px 14px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.5);
+    z-index: 20;
+    backdrop-filter: blur(8px);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s var(--v2-ease);
+}
+
+.v2-canvas-help-tip.visible {
+    opacity: 1;
+}
+
+.v2-canvas-help-tip kbd {
+    display: inline-block;
+    padding: 1px 5px;
+    margin: 0 2px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    color: #fff;
+}
+
+/* ===== 平滑滚轮缩放 ===== */
+.v2-canvas {
+    cursor: grab;
+}
+
+.v2-canvas:active {
+    cursor: grabbing;
+}
+
+/* ===== 节点连接端口优化 ===== */
+.v2-port {
+    transition: background 0.12s var(--v2-ease), box-shadow 0.12s var(--v2-ease), transform 0.12s var(--v2-ease) !important;
+}
+
+.v2-port:hover {
+    transform: translateY(-50%) scale(1.4) !important;
+    box-shadow: 0 0 12px currentColor;
+}
+
+/* ===== 滚动条美化 ===== */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(126, 34, 206, 0.4);
+}
+
+/* ===== 减少不必要的视觉抖动 ===== */
+.v2-canvas.dragging .v2-node:not(.dragging) {
+    transition: none !important;
+}
+
+/* =============================================================================
+ * 节点视口虚拟化（SECTION: 04b VIRTUALIZATION）
+ * 节点数 > 100 时启用，视口外节点用 display:none 隐藏（不参与渲染/事件）
+ * data-virt="hidden" 由 js/v2-app.js 的 applyVirtualization() 控制
+ * ============================================================================= */
+.v2-node[data-virt="hidden"] {
+    display: none !important;
+    pointer-events: none !important;
+}
+
+/* 节点 LOD 简化渲染（远视 zoom < 0.4 + 视口内 + 非选中）
+ * 隐藏内容区，保留标题框，节省 50-80% 渲染开销
+ * .v2-node.lite 由 js/v2-app.js 的 applyVirtualization() 控制
+ * ============================================================================= */
+.v2-node.lite .v2-node-content,
+.v2-node.lite .v2-node-extras,
+.v2-node.lite .v2-node-actions,
+.v2-node.lite .v2-node-status,
+.v2-node.lite .v2-node-port-out,
+.v2-node.lite .v2-node-port-in,
+.v2-node.lite .v2-node-quickbar {
+    display: none !important;
+}
+.v2-node.lite {
+    min-height: 36px !important;
+    height: auto !important;
+    overflow: hidden !important;
+}
+.v2-node.lite .v2-node-head {
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    padding: 6px 10px !important;
+    background: rgba(255, 255, 255, 0.02) !important;
+}
+
+/* 虚拟化统计 HUD（开发调试用，按 ? 键可显示/隐藏） */
+.v2-virt-hud {
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
+    padding: 6px 10px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(126, 34, 206, 0.5);
+    border-radius: 6px;
+    color: #86efac;
+    font-size: 11px;
+    font-family: 'Courier New', monospace;
+    z-index: 10000;
+    pointer-events: none;
+}

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>小马AI画布 v2</title>
+  <link rel="stylesheet" href="./css/base.css">
+  <link rel="stylesheet" href="./css/v2.css">
+  <link rel="stylesheet" href="./css/v2-enhance.css">
+</head>
+<body>
+  <div class="v2-shell">
+    <header class="v2-header">
+      <div class="v2-brand">
+        <div class="v2-brand-mark"><img src="./assets/ai-canvas-logo.png" alt="小马AI画布"></div>
+        <div>
+          <div class="v2-brand-title">小马AI画布 <span class="v2-version" id="v2Version"></span></div>
+          <div class="v2-brand-sub">图片 / 产品资料 / 分层渲染 / 反推 / 生图 工作流</div>
+        </div>
+      </div>
+      <div class="v2-header-actions">
+        <a class="v2-header-btn" href="./index.html">配置</a>
+        <button class="v2-header-btn" type="button" onclick="V2.openDetailPagePreview()">详情页预览</button>
+        <button class="v2-header-btn" type="button" onclick="V2.togglePromptLibrary()">图库</button>
+        <button class="v2-header-btn" type="button" onclick="V2.toggleAssetLibrary()">资产库</button>
+        <button class="v2-header-btn" type="button" onclick="V2.toggleAppLogPanel()">日志</button>
+        <button class="v2-header-btn" type="button" onclick="V2.toggleTrashPanel()">回收站</button>
+        <button class="v2-header-btn danger" type="button" onclick="V2.clearCanvas()">清空 v2</button>
+        <button class="v2-header-btn" type="button" onclick="window.__hardReset()" title="彻底清理：画布 + 回收站 + IndexedDB" style="background:#dc2626">🔥 硬清</button>
+        <button class="v2-header-btn" type="button" onclick="window.__stressTest(1000)" title="一次性添加 1000 个节点测试高强度负载" style="background:#7e22ce">⚡×1000</button>
+      </div>
+    </header>
+
+    <main class="v2-canvas" id="v2Canvas">
+      <div class="v2-grid"></div>
+      <svg class="v2-connections" id="v2Connections"></svg>
+      <div class="v2-world" id="v2World"></div>
+      <div class="v2-selection-box" id="v2SelectionBox"></div>
+    </main>
+
+    <div class="v2-toolbar">
+      <button type="button" onclick="V2.zoomBy(0.1)">+</button>
+      <button type="button" onclick="V2.zoomBy(-0.1)">-</button>
+      <button type="button" onclick="V2.fitView()">适配</button>
+      <button type="button" onclick="V2.arrangeCanvas()">整理</button>
+      <button type="button" onclick="V2.groupSelectedNodes()">编组</button>
+    </div>
+
+    <div class="v2-minimap" id="v2Minimap" title="小地图：点击或拖动快速定位画布">
+      <div class="v2-minimap-stage" id="v2MinimapStage">
+        <div class="v2-minimap-content" id="v2MinimapContent"></div>
+        <div class="v2-minimap-viewport" id="v2MinimapViewport"></div>
+      </div>
+    </div>
+  </div>
+
+    <div class="v2-context-menu" id="v2ContextMenu">
+      <button type="button" data-add-node="text">添加反推</button>
+      <button type="button" data-add-node="detail">添加产品资料</button>
+      <button type="button" data-add-node="sketch">添加分层渲染</button>
+      <button type="button" data-add-node="detailPage">添加详情页</button>
+      <button type="button" data-add-node="tryOn">添加换装</button>
+      <button type="button" data-add-node="cinema">添加电影</button>
+      <button type="button" data-add-node="generate">添加生图</button>
+    </div>
+
+    <button class="v2-assistant-rail" id="v2AssistantRail" type="button">智能体</button>
+    <aside class="v2-assistant-panel" id="v2AssistantPanel" aria-label="智能体"></aside>
+
+  <aside class="v2-library-panel" id="v2PromptLibraryPanel">
+    <div class="v2-library-head">
+      <div>
+        <div class="v2-library-title">提示词图库</div>
+        <div class="v2-library-sub" id="v2PromptLibraryCount">0 张好图</div>
+      </div>
+      <button type="button" class="v2-library-close" onclick="V2.togglePromptLibrary(false)">×</button>
+    </div>
+    <div class="v2-library-grid" id="v2PromptLibraryGrid">
+      <div class="v2-library-empty">生成好图后点“加入图库”保存</div>
+    </div>
+  </aside>
+
+  <aside class="v2-asset-panel" id="v2AssetLibraryPanel">
+    <div class="v2-asset-head">
+      <div>
+        <div class="v2-asset-title">资产库</div>
+        <div class="v2-asset-sub" id="v2AssetLibraryCount">0 个素材</div>
+      </div>
+      <div class="v2-asset-actions">
+        <button type="button" onclick="V2.openAssetFolderCreate()">+ 新建分组</button>
+        <button type="button" class="v2-asset-close" onclick="V2.toggleAssetLibrary(false)">×</button>
+      </div>
+    </div>
+    <div class="v2-asset-body">
+      <div class="v2-asset-sidebar" id="v2AssetFolderList"></div>
+      <div class="v2-asset-main">
+        <div class="v2-asset-toolbar">
+          <input type="text" id="v2AssetSearch" placeholder="搜索素材名称或标签..." />
+          <span class="v2-asset-hint">拖拽节点到分组即可归档</span>
+        </div>
+        <div class="v2-asset-grid" id="v2AssetLibraryGrid">
+          <div class="v2-asset-empty">将画布中的图片/生成图拖到左侧分组即可整理</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <div class="v2-mention-menu" id="v2MentionMenu"></div>
+
+  <aside class="v2-log-panel" id="v2LogPanel">
+    <div class="v2-log-head">
+      <div>
+        <div class="v2-log-title">软件日志</div>
+        <div class="v2-log-sub" id="v2LogSummary">0 条记录</div>
+      </div>
+      <div class="v2-log-actions">
+        <button type="button" onclick="V2.copyAppLogs()">复制</button>
+        <button type="button" onclick="V2.clearAppLogs()">清空</button>
+        <button type="button" class="v2-log-close" onclick="V2.toggleAppLogPanel(false)">×</button>
+      </div>
+    </div>
+    <div class="v2-log-list" id="v2LogList">
+      <div class="v2-log-empty">暂无日志</div>
+    </div>
+  </aside>
+
+  <aside class="v2-trash-panel" id="v2TrashPanel">
+    <div class="v2-trash-head">
+      <div>
+        <div class="v2-trash-title">回收站</div>
+        <div class="v2-trash-sub" id="v2TrashSummary">0 个节点</div>
+      </div>
+      <div class="v2-trash-actions">
+        <button type="button" onclick="V2.clearTrash()">清空回收站</button>
+        <button type="button" class="v2-trash-close" onclick="V2.toggleTrashPanel(false)">×</button>
+      </div>
+    </div>
+    <div class="v2-trash-list" id="v2TrashList">
+      <div class="v2-trash-empty">回收站为空</div>
+    </div>
+  </aside>
+
+  <aside class="v2-detail-page-panel" id="v2DetailPagePanel">
+    <div class="v2-detail-page-head">
+      <div>
+        <div class="v2-detail-page-title">详情页预览</div>
+        <div class="v2-detail-page-sub" id="v2DetailPageSummary">还没有详情页分屏</div>
+      </div>
+      <div class="v2-detail-page-actions">
+        <button type="button" class="v2-detail-page-close" onclick="V2.toggleDetailPagePanel(false)">×</button>
+      </div>
+    </div>
+    <div class="v2-detail-page-flow" id="v2DetailPageFlow">
+      <div class="v2-detail-page-empty">详情页节点生成分屏后，在这里查看连续衔接效果。</div>
+    </div>
+  </aside>
+
+  <div class="v2-preview-modal" id="v2PreviewModal">
+    <div class="v2-preview-shell">
+      <div class="v2-preview-tools">
+        <button type="button" class="v2-preview-download" id="v2PreviewDownload">下载保存</button>
+        <button type="button" class="v2-preview-close" data-v2-preview-close>×</button>
+      </div>
+      <button type="button" class="v2-preview-ver-arrow left" id="v2PreviewPrev" title="上一张">&#8249;</button>
+      <img id="v2PreviewImg" alt="生成预览">
+      <button type="button" class="v2-preview-ver-arrow right" id="v2PreviewNext" title="下一张">&#8250;</button>
+      <div class="v2-preview-caption" id="v2PreviewCaption"></div>
+    </div>
+  </div>
+
+  <div class="v2-region-modal" id="v2RegionModal">
+    <div class="v2-region-shell">
+      <div class="v2-region-head">
+        <div>
+          <div class="v2-region-title">聚焦区域</div>
+          <div class="v2-region-sub" id="v2RegionSubjectLabel">主图</div>
+        </div>
+        <button type="button" class="v2-preview-close" data-region-cancel>×</button>
+      </div>
+      <div class="v2-region-stage" id="v2RegionStage">
+        <img id="v2RegionImg" alt="聚焦主图">
+        <div class="v2-region-selection" id="v2RegionSelection"></div>
+      </div>
+      <div class="v2-region-actions">
+        <span>拖拽图片区域设置矩形选区，再保存。</span>
+        <button type="button" class="v2-action secondary" data-region-cancel>取消</button>
+        <button type="button" class="v2-action" id="v2RegionSave">保存聚焦</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="v2-close-guard-modal" id="v2CloseGuardModal" aria-hidden="true">
+    <div class="v2-close-guard-shell" role="dialog" aria-modal="true" aria-labelledby="v2CloseGuardTitle">
+      <div class="v2-close-guard-kicker">生成中关闭保护</div>
+      <div class="v2-close-guard-title" id="v2CloseGuardTitle">图片还在生成中</div>
+      <div class="v2-close-guard-copy">关闭后无法接回本次结果，可能已扣费。建议继续等待生成完成。</div>
+      <div class="v2-close-guard-list" id="v2CloseGuardList"></div>
+      <div class="v2-close-guard-actions">
+        <button type="button" class="v2-close-guard-wait" id="v2CloseGuardWait">继续等待</button>
+        <button type="button" class="v2-close-guard-close" id="v2CloseGuardClose">仍然关闭</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script src="./js/safe-storage.js" defer></script>
+  <script src="./js/config.js" defer></script>
+  <script src="./js/db.js" defer></script>
+  <script src="./js/utils.js" defer></script>
+  <script src="./js/api.js" defer></script>
+  <script src="./js/prompt-engine.js" defer></script>
+  <script src="./js/cinema-prompt.js" defer></script>
+  <script src="./js/v2-app.js" defer></script>
+  <script src="./js/v2-mcp-bridge.js" defer></script>
+</body>
+</html>

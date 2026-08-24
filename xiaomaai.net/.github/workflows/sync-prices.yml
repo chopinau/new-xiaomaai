@@ -1,0 +1,105 @@
+# 自动同步模型价格数据
+# 每天凌晨 2 点（北京时间 10 点）运行
+# 数据源：LiteLLM + OpenRouter
+# 同步内容：data/modelPricing.ts + data-source-cache/sync-meta.json
+
+name: Sync Model Prices
+
+on:
+  # 每天 UTC 18:00 运行（北京时间凌晨 2:00）
+  schedule:
+    - cron: '0 18 * * *'
+  # 允许手动触发
+  workflow_dispatch:
+    inputs:
+      force:
+        description: '强制提交（即使无变化）'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write  # 允许 push 提交
+  pull-requests: write  # 允许创建 PR
+
+jobs:
+  sync:
+    name: Fetch + Generate + Commit
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: xiaomaai.net/package-lock.json
+
+      - name: Install dependencies
+        working-directory: xiaomaai.net
+        run: npm ci --no-audit --no-fund || npm install --no-audit --no-fund
+
+      - name: Fetch pricing sources
+        working-directory: xiaomaai.net
+        run: node scripts/fetch-pricing-sources.mjs
+
+      - name: Generate modelPricing.ts
+        working-directory: xiaomaai.net
+        run: node scripts/sync-pricing.mjs
+
+      - name: Detect outdated content
+        id: detect
+        working-directory: xiaomaai.net
+        run: |
+          echo "🔍 扫描过时内容..."
+          node scripts/check-outdated.mjs --output=github > outdated-report.txt || true
+          if [ -s outdated-report.txt ]; then
+            echo "⚠️ 发现过时引用"
+            echo "::warning file=outdated-report.txt::检测到过时内容，详情见日志"
+            cat outdated-report.txt
+          else
+            echo "✅ 未发现过时内容"
+          fi
+
+      - name: Check for changes
+        id: changes
+        run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "changed=true" >> $GITHUB_OUTPUT
+            echo "📝 检测到变更"
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "✅ 无变更"
+          fi
+
+      - name: Commit and push
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/modelPricing.ts data-source-cache/
+          git commit -m "chore(sync): auto-update model prices $(date -u +'%Y-%m-%d %H:%M UTC')
+
+          - 同步 LiteLLM + OpenRouter 价格数据
+          - 覆盖 ${{ steps.detect.outputs.modelCount || 'N/A' }} 个模型
+          - 数据源：LiteLLM (${{ steps.detect.outputs.litellmCount || 'N/A' }}) + OpenRouter (${{ steps.detect.outputs.openrouterCount || 'N/A' }})
+          - Run: ${{ github.run_id }}
+          - 详见 data-source-cache/sync-report.md"
+          git push
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sync-report
+          path: |
+            xiaomaai.net/data-source-cache/sync-report.md
+            xiaomaai.net/data-source-cache/sync-meta.json
+            outdated-report.txt
+          retention-days: 30

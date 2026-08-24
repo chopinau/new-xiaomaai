@@ -1,0 +1,12 @@
+{
+  "lastSyncAt": "2026-07-06T07:09:20.291Z",
+  "lastSyncDate": "2026-07-06",
+  "modelCount": 59,
+  "sources": {
+    "litellm": 2932,
+    "openrouter": 340
+  },
+  "exchangeRate": 7.2,
+  "commitSha": null,
+  "runId": null
+}
