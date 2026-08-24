@@ -38,8 +38,8 @@ Thumbs.db
 # MCP server runtime
 mcp-server/
 
-# Data source cache (large JSON caches)
-data-source-cache/
+# Data source cache (only gitignore large generated files, keep tracked ones)
+data-source-cache/sync-report.md
 
 # Binary executables
 *.exe
