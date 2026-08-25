@@ -1,7 +1,8 @@
-﻿import { NextRequest, NextResponse } from 'next/server'
+﻿export const runtime = 'edge';
+
+import { NextRequest, NextResponse } from 'next/server'
 import { articles, searchArticles, getRecentArticles } from '@/data/articles'
 
-export const runtime = 'edge';
 
 export const dynamic = 'force-dynamic'
 

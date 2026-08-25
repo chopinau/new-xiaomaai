@@ -4,10 +4,9 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && opennextjs-cloudflare build",
+    "build": "next build",
     "postbuild": "node postbuild.js",
     "start": "next start",
-    "deploy": "wrangler deploy",
     "lint": "eslint .",
     "sync:fetch": "node scripts/fetch-pricing-sources.mjs",
     "sync:pricing": "node scripts/sync-pricing.mjs",

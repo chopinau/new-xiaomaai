@@ -1,10 +1,11 @@
-﻿'use client'
+﻿export const runtime = 'edge';
+
+'use client'
 
 import { use, useEffect, useState, useMemo } from 'react'
 import { notFound } from 'next/navigation'
 import {
 
-export const runtime = 'edge';
   MessageSquare,
   Image as ImageIcon,
   Video,

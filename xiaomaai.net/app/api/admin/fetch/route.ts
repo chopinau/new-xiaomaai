@@ -1,7 +1,8 @@
-﻿import { NextRequest, NextResponse } from 'next/server'
+﻿export const runtime = 'edge';
+
+import { NextRequest, NextResponse } from 'next/server'
 import { spawn } from 'child_process'
 
-export const runtime = 'edge';
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'

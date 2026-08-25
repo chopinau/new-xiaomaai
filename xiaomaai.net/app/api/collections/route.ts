@@ -1,7 +1,8 @@
-﻿import { NextResponse } from 'next/server'
+﻿export const runtime = 'edge';
+
+import { NextResponse } from 'next/server'
 import { getCollections, collections } from '@/data/collections'
 
-export const runtime = 'edge';
 
 export const dynamic = 'force-dynamic'
 

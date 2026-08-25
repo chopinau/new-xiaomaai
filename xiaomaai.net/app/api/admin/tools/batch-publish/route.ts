@@ -1,8 +1,9 @@
-﻿import { NextRequest, NextResponse } from 'next/server'
+﻿export const runtime = 'edge';
+
+import { NextRequest, NextResponse } from 'next/server'
 import { readFileSync, writeFileSync } from 'fs'
 import path from 'path'
 
-export const runtime = 'edge';
 
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'

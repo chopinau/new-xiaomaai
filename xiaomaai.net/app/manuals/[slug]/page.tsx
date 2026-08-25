@@ -1,4 +1,6 @@
-﻿import { notFound } from 'next/navigation'
+﻿export const runtime = 'edge';
+
+import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { promises as fs } from 'fs'
 import path from 'path'
@@ -11,7 +13,6 @@ import { SiteFooter } from '@/components/site-footer'
 import { manuals } from '@/data/manuals'
 import { tools as allTools } from '@/data/tools'
 
-export const runtime = 'edge';
 
 interface PageProps {
   params: Promise<{ slug: string }>

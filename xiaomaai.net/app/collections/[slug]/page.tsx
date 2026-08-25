@@ -1,11 +1,12 @@
-﻿'use client'
+﻿export const runtime = 'edge';
+
+'use client'
 
 import { use, useEffect, useState, useMemo } from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import {
 
-export const runtime = 'edge';
   ChevronRight,
   Archive,
   ListOrdered,
