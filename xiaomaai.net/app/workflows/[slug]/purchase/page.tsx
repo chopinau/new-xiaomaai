@@ -1,10 +1,12 @@
-import Link from 'next/link'
+﻿import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft, Copy, MessageCircle, CheckCircle2, Smartphone } from 'lucide-react'
 import { TopNav } from '@/components/TopNav'
 import { SiteFooter } from '@/components/site-footer'
 import { Button } from '@/components/ui/button'
 import { workflows } from '@/data/workflows'
+
+export const runtime = 'edge';
 
 interface PageProps {
   params: Promise<{ slug: string }>

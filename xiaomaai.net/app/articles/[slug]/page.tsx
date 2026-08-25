@@ -1,9 +1,11 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { Fragment, useEffect, useState } from 'react'
 import { notFound } from 'next/navigation'
 import {
+
+export const runtime = 'edge';
   Calendar, Clock, Eye, Tag, ChevronRight, Sparkles,
   ListOrdered, Library, Flame, PenLine,
 } from 'lucide-react'

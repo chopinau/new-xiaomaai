@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+﻿import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, ExternalLink, ShoppingCart, MessageCircle, Star, Users, Tag, Zap, DollarSign } from 'lucide-react'
 import { TopNav } from '@/components/TopNav'
@@ -6,6 +6,8 @@ import { SiteFooter } from '@/components/site-footer'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { workflows } from '@/data/workflows'
+
+export const runtime = 'edge';
 
 interface PageProps {
   params: Promise<{ slug: string }>

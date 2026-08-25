@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+﻿import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { promises as fs } from 'fs'
 import path from 'path'
@@ -10,6 +10,8 @@ import { TopNav } from '@/components/TopNav'
 import { SiteFooter } from '@/components/site-footer'
 import { manuals } from '@/data/manuals'
 import { tools as allTools } from '@/data/tools'
+
+export const runtime = 'edge';
 
 interface PageProps {
   params: Promise<{ slug: string }>

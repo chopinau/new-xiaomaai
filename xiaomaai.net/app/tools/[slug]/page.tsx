@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import Link from 'next/link'
 import { use, useEffect, useState, useCallback } from 'react'
@@ -20,6 +20,8 @@ import { FavoriteButton } from '@/components/FavoriteButton'
 import { ToolTagCloud } from '@/components/tools/ToolTagCloud'
 import { addRecentTool, getCompareList, addToCompare } from '@/lib/storage'
 import syncMeta from '../../../data-source-cache/sync-meta.json'
+
+export const runtime = 'edge';
 
 export default function ToolDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   // Next.js 15: params 是 Promise，用 React 19 的 use() 同步解析

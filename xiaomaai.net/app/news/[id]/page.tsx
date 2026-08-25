@@ -1,9 +1,11 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState, use } from 'react'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import {
+
+export const runtime = 'edge';
   Calendar,
   ChevronRight,
   ExternalLink,

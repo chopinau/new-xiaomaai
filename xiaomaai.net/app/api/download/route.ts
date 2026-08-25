@@ -1,4 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+﻿import { NextRequest, NextResponse } from 'next/server';
+
+export const runtime = 'edge';
 
 // 本地下载代理：解决跨域视频无法 fetch 下载的问题
 // 浏览器请求 /api/download?url=xxx，服务端下载后流式返回

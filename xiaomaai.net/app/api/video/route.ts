@@ -1,4 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+﻿import { NextRequest, NextResponse } from 'next/server';
+
+export const runtime = 'edge';
 
 // 视频流代理：解决跨域视频无法在 <video> 标签中播放的问题
 // 浏览器请求 /api/video?url=xxx，服务端流式转发视频

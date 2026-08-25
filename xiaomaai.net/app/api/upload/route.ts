@@ -1,4 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
+﻿import { NextRequest, NextResponse } from 'next/server';
+
+export const runtime = 'edge';
 
 // 本地代理上传到 catbox.moe / litterbox.catbox.moe
 // 适用于 next dev 开发环境，解决浏览器 CORS 限制

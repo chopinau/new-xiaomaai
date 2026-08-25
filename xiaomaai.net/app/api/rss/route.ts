@@ -1,4 +1,6 @@
-import { articles } from '@/data/articles'
+﻿import { articles } from '@/data/articles'
+
+export const runtime = 'edge';
 
 export async function GET() {
   const baseUrl = 'https://xiaomaai.net'
