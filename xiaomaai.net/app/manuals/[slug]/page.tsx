@@ -1,18 +1,22 @@
-﻿export const runtime = 'edge';
+export const runtime = 'edge';
 
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { promises as fs } from 'fs'
-import path from 'path'
-import matter from 'gray-matter'
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
 import { ArrowLeft, BookOpen, Eye, Calendar, Tag, ChevronRight, ExternalLink, Sparkles } from 'lucide-react'
 import { TopNav } from '@/components/TopNav'
 import { SiteFooter } from '@/components/site-footer'
 import { manuals } from '@/data/manuals'
 import { tools as allTools } from '@/data/tools'
+import MarkdownViewer from '@/components/MarkdownViewer'
 
+// 隐藏 require 调用，避免 webpack 打包 Node.js 原生模块
+function nodeRequire(name: string): any {
+  try {
+    return (0, eval)('require')(name)
+  } catch {
+    return null
+  }
+}
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -26,15 +30,20 @@ export default async function ManualDetailPage({ params }: PageProps) {
     notFound()
   }
 
-  // 读 md 文件
-  const filePath = path.join(process.cwd(), 'data', 'manuals', `${slug}.md`)
-  let content = ''
-  try {
-    const raw = await fs.readFile(filePath, 'utf-8')
-    const { content: mdContent } = matter(raw)
-    content = mdContent
-  } catch {
-    content = '*手册内容待补充*'
+  // 尝试读取 md 文件(本地开发可用，边缘环境返回占位内容)
+  const fs = nodeRequire('fs')
+  const path = nodeRequire('path')
+  let content = '*手册内容待补充*'
+  if (fs && path) {
+    try {
+      const filePath = path.join(process.cwd(), 'data', 'manuals', `${slug}.md`)
+      const raw = fs.readFileSync(filePath, 'utf-8')
+      // 简单解析 frontmatter: 去掉开头的 --- ... --- 块
+      const fmMatch = raw.match(/^---\n[\s\S]*?\n---\n/)
+      content = fmMatch ? raw.slice(fmMatch[0].length) : raw
+    } catch {
+      content = '*手册内容待补充*'
+    }
   }
 
   // 相关工具
@@ -42,7 +51,7 @@ export default async function ManualDetailPage({ params }: PageProps) {
     .filter((t) => meta.relatedTools.includes(t.slug))
     .slice(0, 4)
 
-  // 在线使用入口:支持站内 slug 或完整 https:// 链接
+  // 在线使用入口
   const toolIsExternal = !!meta.toolUrl && /^https?:\/\//.test(meta.toolUrl)
   const toolHref = meta.toolUrl
     ? toolIsExternal
@@ -104,7 +113,7 @@ export default async function ManualDetailPage({ params }: PageProps) {
               ))}
             </div>
 
-            {/* 在线使用入口(P1: 立即跳到工具) */}
+            {/* 在线使用入口 */}
             {toolHref && (
               <div className="mt-5 flex flex-wrap items-center gap-3 rounded-xl border border-emerald-200 bg-emerald-50/60 p-3">
                 <Sparkles className="size-4 shrink-0 text-emerald-600" />
@@ -127,9 +136,7 @@ export default async function ManualDetailPage({ params }: PageProps) {
 
         {/* Markdown 内容 */}
         <article className="prose prose-sm mt-8 max-w-none rounded-2xl border border-border bg-card p-6 shadow-card sm:p-8 prose-headings:font-bold prose-headings:text-foreground prose-h1:text-2xl prose-h2:mt-8 prose-h2:text-xl prose-h3:mt-6 prose-h3:text-base prose-p:my-3 prose-p:leading-relaxed prose-p:text-muted-foreground prose-code:rounded prose-code:bg-muted prose-code:px-1.5 prose-code:py-0.5 prose-code:text-brand-purple prose-pre:bg-foreground prose-pre:text-white prose-strong:text-foreground prose-li:text-muted-foreground prose-a:text-brand-purple prose-a:no-underline hover:prose-a:underline">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {content}
-          </ReactMarkdown>
+          <MarkdownViewer content={content} />
         </article>
 
         {/* 相关工具 */}
