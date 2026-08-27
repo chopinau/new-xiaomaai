@@ -1,9 +1,15 @@
-﻿export const runtime = 'edge';
+export const runtime = 'edge';
 
 import { NextRequest, NextResponse } from 'next/server'
-import { promises as fs } from 'fs'
-import path from 'path'
 
+// 隐藏 require 调用，避免 webpack 打包 Node.js 原生模块
+function nodeRequire(name: string): any {
+  try {
+    return (0, eval)('require')(name)
+  } catch {
+    return null
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,6 +20,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { success: false, message: '工具名称和官网 URL 为必填字段' },
         { status: 400 },
+      )
+    }
+
+    const fs = nodeRequire('fs')
+    const path = nodeRequire('path')
+    if (!fs || !path) {
+      return NextResponse.json(
+        { success: false, message: '边缘环境不支持文件系统操作，请在本地开发环境使用' },
+        { status: 503 },
       )
     }
 
@@ -30,7 +45,7 @@ export async function POST(request: NextRequest) {
 
     let existing: typeof entry[] = []
     try {
-      const raw = await fs.readFile(filePath, 'utf-8')
+      const raw = fs.readFileSync(filePath, 'utf-8')
       existing = JSON.parse(raw)
       if (!Array.isArray(existing)) existing = []
     } catch {
@@ -38,7 +53,7 @@ export async function POST(request: NextRequest) {
     }
 
     existing.unshift(entry)
-    await fs.writeFile(filePath, JSON.stringify(existing, null, 2), 'utf-8')
+    fs.writeFileSync(filePath, JSON.stringify(existing, null, 2), 'utf-8')
 
     return NextResponse.json({ success: true, message: '提交成功' })
   } catch (error) {

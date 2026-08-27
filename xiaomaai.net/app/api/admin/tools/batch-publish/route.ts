@@ -1,13 +1,17 @@
 export const runtime = 'edge';
 
 import { NextRequest, NextResponse } from 'next/server'
-import { readFileSync, writeFileSync } from 'node:fs'
-import path from 'node:path'
 
 export const dynamic = 'force-dynamic'
 
-const DRAFT_FILE = path.join(process.cwd(), 'data', 'tools-draft.ts')
-const TOOLS_FILE = path.join(process.cwd(), 'data', 'tools.ts')
+// 隐藏 require 调用，避免 webpack 打包 Node.js 原生模块
+function nodeRequire(name: string): any {
+  try {
+    return (0, eval)('require')(name)
+  } catch {
+    return null
+  }
+}
 
 type ToolDraft = {
   source: 'github-trending' | 'producthunt' | 'submit' | 'faxianai' | 'toolify' | 'aitaaft' | 'futurepedia' | 'aibase' | 'ai-bot' | 'ai-nav'
@@ -54,9 +58,21 @@ function extractArray(raw: string, marker: string): ToolDraft[] {
   return []
 }
 
+function getFilePaths() {
+  const path = nodeRequire('path')
+  if (!path) return null
+  return {
+    draftFile: path.join(process.cwd(), 'data', 'tools-draft.ts'),
+    toolsFile: path.join(process.cwd(), 'data', 'tools.ts'),
+  }
+}
+
 function readDrafts(): ToolDraft[] {
   try {
-    const raw = readFileSync(DRAFT_FILE, 'utf-8')
+    const fs = nodeRequire('fs')
+    const paths = getFilePaths()
+    if (!fs || !paths) return []
+    const raw = fs.readFileSync(paths.draftFile, 'utf-8')
     return extractArray(raw, 'export const toolDrafts: ToolDraft[] = [')
   } catch {
     return []
@@ -64,6 +80,9 @@ function readDrafts(): ToolDraft[] {
 }
 
 function writeDrafts(drafts: ToolDraft[]) {
+  const fs = nodeRequire('fs')
+  const paths = getFilePaths()
+  if (!fs || !paths) return
   const output = `// 草稿区: GitHub Actions 抓取热门 AI 工具后写入,人工在 /admin/tools 审核入库
 // 本文件会被 scripts/fetch-trending.mjs 定时覆盖,请勿手工编辑数据
 
@@ -78,7 +97,7 @@ export interface ToolDraft {
 
 export const toolDrafts: ToolDraft[] = ${JSON.stringify(drafts, null, 2)}
 `
-  writeFileSync(DRAFT_FILE, output, 'utf-8')
+  fs.writeFileSync(paths.draftFile, output, 'utf-8')
 }
 
 function escapeSingleQuote(s: string) {
@@ -86,7 +105,10 @@ function escapeSingleQuote(s: string) {
 }
 
 function appendToTools(draft: ToolDraft, overrides: { category?: string; tags?: string[] }) {
-  const raw = readFileSync(TOOLS_FILE, 'utf-8')
+  const fs = nodeRequire('fs')
+  const paths = getFilePaths()
+  if (!fs || !paths) throw new Error('文件系统不可用')
+  const raw = fs.readFileSync(paths.toolsFile, 'utf-8')
   const marker = 'export const tools: Tool[] = ['
   const idx = raw.indexOf(marker)
   if (idx === -1) throw new Error('data/tools.ts 格式异常: 找不到 tools 数组')
@@ -116,13 +138,21 @@ function appendToTools(draft: ToolDraft, overrides: { category?: string; tags?: 
 
   const insertAt = raw.indexOf('[', idx) + 1
   const updated = raw.slice(0, insertAt) + '\n' + entry + raw.slice(insertAt)
-  writeFileSync(TOOLS_FILE, updated, 'utf-8')
+  fs.writeFileSync(paths.toolsFile, updated, 'utf-8')
 }
 
 // POST /api/admin/tools/batch-publish
-// body: { slugs: string[]; password: string; action: 'publish' | 'discard'; category?: string; tags?: string[] }
 export async function POST(request: NextRequest) {
   try {
+    const fs = nodeRequire('fs')
+    const path = nodeRequire('path')
+    if (!fs || !path) {
+      return NextResponse.json(
+        { success: false, error: '边缘环境不支持文件系统操作，请在本地开发环境使用' },
+        { status: 503 }
+      )
+    }
+
     const body = await request.json()
     const { slugs, password, action, category, tags } = body || {}
 

@@ -1,19 +1,23 @@
 export const runtime = 'edge';
 
 import { NextRequest, NextResponse } from 'next/server'
-import { readFileSync } from 'node:fs'
-import path from 'node:path'
-
 
 export const dynamic = 'force-dynamic'
 
-// 从 TS 文件中提取 export const xxx: Type[] = [...] 数组(括号匹配,忽略字符串内括号)
-// 注意: 数组内容由 JSON.stringify 生成,字符串统一用双引号,故只识别双引号边界
+// 隐藏 require 调用，避免 webpack 打包 Node.js 原生模块
+function nodeRequire(name: string): any {
+  try {
+    return (0, eval)('require')(name)
+  } catch {
+    return null
+  }
+}
+
 function extractArray(raw: string, marker: string): unknown[] {
   const start = raw.indexOf(marker)
   if (start === -1) return []
   const arrStart = start + marker.length
-  let depth = 1 // marker 以 '[' 结尾
+  let depth = 1
   let inStr = false
   for (let i = arrStart; i < raw.length; i++) {
     const c = raw[i]
@@ -34,11 +38,13 @@ function extractArray(raw: string, marker: string): unknown[] {
   return []
 }
 
-// 读取 data/news-draft.ts 中的草稿数组(文件由 fetch-news.mjs 生成,数组为标准 JSON 格式)
 function readDrafts(): unknown[] {
   try {
+    const fs = nodeRequire('fs')
+    const path = nodeRequire('path')
+    if (!fs || !path) return []
     const filePath = path.join(process.cwd(), 'data', 'news-draft.ts')
-    const raw = readFileSync(filePath, 'utf-8')
+    const raw = fs.readFileSync(filePath, 'utf-8')
     return extractArray(raw, 'export const newsDrafts: NewsDraft[] = [')
   } catch {
     return []
@@ -55,6 +61,16 @@ export async function GET(request: NextRequest) {
   if (password !== expected) {
     return NextResponse.json({ success: false, error: '密码错误' }, { status: 401 })
   }
+
+  const fs = nodeRequire('fs')
+  const path = nodeRequire('path')
+  if (!fs || !path) {
+    return NextResponse.json(
+      { success: false, error: '边缘环境不支持文件系统操作，请在本地开发环境使用' },
+      { status: 503 }
+    )
+  }
+
   let drafts = readDrafts() as Array<{ id: string; title: string; source: string; summary: string; fetchedAt: string; publishedAt: string }>
   if (source) drafts = drafts.filter((d) => d.source === source)
   if (search) {
@@ -62,7 +78,6 @@ export async function GET(request: NextRequest) {
       (d) => d.title?.toLowerCase().includes(search) || d.summary?.toLowerCase().includes(search)
     )
   }
-  // 默认按 fetchedAt desc
   drafts = [...drafts].sort((a, b) => (b.fetchedAt || '').localeCompare(a.fetchedAt || ''))
   return NextResponse.json({ success: true, total: drafts.length, data: drafts })
 }

@@ -1,13 +1,19 @@
 export const runtime = 'edge';
 
 import { NextRequest, NextResponse } from 'next/server'
-import { spawn } from 'node:child_process'
 
 export const dynamic = 'force-dynamic'
 
+// 隐藏 require 调用，避免 webpack 打包 Node.js 原生模块
+function nodeRequire(name: string): any {
+  try {
+    return (0, eval)('require')(name)
+  } catch {
+    return null
+  }
+}
+
 // POST /api/admin/fetch — 统一抓取入口(dev 模式 spawn 脚本,生产模式拦截)
-// body: { type: 'news' | 'tools', source?: string, password: string }
-// 响应: SSE 流(text/event-stream),实时推送脚本 stdout/stderr 与完成事件
 const NEWS_SCRIPT = 'scripts/fetch-news.mjs'
 
 const TOOL_SCRIPTS: Record<string, string> = {
@@ -20,7 +26,6 @@ const TOOL_SCRIPTS: Record<string, string> = {
   'ai-nav': 'scripts/import-ai-nav.mjs',
 }
 
-// 'all' 模式下串行运行的 7 个源(faxianai + 6 个新源)
 const ALL_TOOL_SOURCES = [
   'faxianai',
   'toolify',
@@ -37,19 +42,23 @@ const SSE_HEADERS = {
   Connection: 'keep-alive',
 }
 
-// 从脚本输出行解析新增数量,如 "共新增 12 条" / "本次新增 8 条"
 function parseAdded(line: string): string | null {
   const m = line.match(/新增\s*(\d+)\s*条/)
   return m ? m[1] : null
 }
 
-// 运行单个脚本,逐行推送日志;返回退出码与解析到的新增数量
 function runScript(
   scriptPath: string,
   send: (obj: Record<string, unknown>) => void
 ): Promise<{ code: number; added: string }> {
   return new Promise((resolve) => {
-    const child = spawn('node', [scriptPath], { cwd: process.cwd() })
+    const cp = nodeRequire('child_process')
+    if (!cp) {
+      send({ line: '[error] child_process 不可用(边缘环境)', stderr: true })
+      resolve({ code: 1, added: 'unknown' })
+      return
+    }
+    const child = cp.spawn('node', [scriptPath], { cwd: process.cwd() })
     let added = 'unknown'
 
     child.stdout.on('data', (data: Buffer) => {
@@ -84,7 +93,6 @@ function runScript(
 }
 
 export async function POST(request: NextRequest) {
-  // 1. 解析 body
   let parsed: unknown
   try {
     parsed = await request.json()
@@ -100,13 +108,11 @@ export async function POST(request: NextRequest) {
     password?: string
   }
 
-  // 2. 密码校验(失败返回 401)
   const expected = process.env.ADMIN_PASSWORD || 'admin123'
   if (password !== expected) {
     return NextResponse.json({ ok: false, error: '密码错误' }, { status: 401 })
   }
 
-  // 3. 生产环境拦截(不触发任何脚本)
   if (process.env.NODE_ENV === 'production') {
     return NextResponse.json({
       ok: false,
@@ -115,7 +121,6 @@ export async function POST(request: NextRequest) {
     })
   }
 
-  // 4. 校验 type 并解析要运行的脚本
   if (type !== 'news' && type !== 'tools') {
     return NextResponse.json(
       { ok: false, error: "type 必须为 'news' 或 'tools'" },
@@ -145,7 +150,6 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  // 5. SSE 流式响应
   const encoder = new TextEncoder()
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
@@ -155,7 +159,6 @@ export async function POST(request: NextRequest) {
 
       try {
         if (scripts.length === 1) {
-          // 单脚本模式
           const { path } = scripts[0]
           const { code, added } = await runScript(path, send)
           if (code === 0) {
@@ -164,7 +167,6 @@ export async function POST(request: NextRequest) {
             send({ done: true, error: `exit code ${code}` })
           }
         } else {
-          // 'all' 模式: 串行运行,每个完成后立即推送结果,最后汇总
           const summaryParts: string[] = []
           for (const { name, path } of scripts) {
             send({ line: `--- 运行 ${name} ---` })

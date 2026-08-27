@@ -1,13 +1,17 @@
 export const runtime = 'edge';
 
 import { NextRequest, NextResponse } from 'next/server'
-import { readFileSync, writeFileSync } from 'node:fs'
-import path from 'node:path'
 
 export const dynamic = 'force-dynamic'
 
-const DRAFT_FILE = path.join(process.cwd(), 'data', 'news-draft.ts')
-const NEWS_FILE = path.join(process.cwd(), 'data', 'news.ts')
+// 隐藏 require 调用，避免 webpack 打包 Node.js 原生模块
+function nodeRequire(name: string): any {
+  try {
+    return (0, eval)('require')(name)
+  } catch {
+    return null
+  }
+}
 
 type NewsDraft = {
   id: string
@@ -46,9 +50,21 @@ function extractArray(raw: string, marker: string): NewsDraft[] {
   return []
 }
 
+function getFilePaths() {
+  const path = nodeRequire('path')
+  if (!path) return null
+  return {
+    draftFile: path.join(process.cwd(), 'data', 'news-draft.ts'),
+    newsFile: path.join(process.cwd(), 'data', 'news.ts'),
+  }
+}
+
 function readDrafts(): NewsDraft[] {
   try {
-    const raw = readFileSync(DRAFT_FILE, 'utf-8')
+    const fs = nodeRequire('fs')
+    const paths = getFilePaths()
+    if (!fs || !paths) return []
+    const raw = fs.readFileSync(paths.draftFile, 'utf-8')
     return extractArray(raw, 'export const newsDrafts: NewsDraft[] = [')
   } catch {
     return []
@@ -56,6 +72,9 @@ function readDrafts(): NewsDraft[] {
 }
 
 function writeDrafts(drafts: NewsDraft[]) {
+  const fs = nodeRequire('fs')
+  const paths = getFilePaths()
+  if (!fs || !paths) return
   const output = `// 草稿区: GitHub Actions 自动抓取写入,人工在 /admin/news 审核发布
 // 本文件会被 scripts/fetch-news.mjs 定时覆盖,请勿手工编辑数据
 
@@ -77,16 +96,18 @@ export function getNewsDrafts(): NewsDraft[] {
   return newsDrafts
 }
 `
-  writeFileSync(DRAFT_FILE, output, 'utf-8')
+  fs.writeFileSync(paths.draftFile, output, 'utf-8')
 }
 
 function escapeSingleQuote(s: string) {
   return (s || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'")
 }
 
-// 把一条草稿写入 data/news.ts(插入数组头部)
 function appendToNews(item: NewsDraft) {
-  const raw = readFileSync(NEWS_FILE, 'utf-8')
+  const fs = nodeRequire('fs')
+  const paths = getFilePaths()
+  if (!fs || !paths) throw new Error('文件系统不可用')
+  const raw = fs.readFileSync(paths.newsFile, 'utf-8')
   const marker = 'export const newsItems: NewsItem[] = ['
   const idx = raw.indexOf(marker)
   if (idx === -1) throw new Error('data/news.ts 格式异常: 找不到 newsItems 数组')
@@ -104,13 +125,21 @@ function appendToNews(item: NewsDraft) {
 
   const insertAt = raw.indexOf('[', idx) + 1
   const updated = raw.slice(0, insertAt) + '\n' + entry + raw.slice(insertAt)
-  writeFileSync(NEWS_FILE, updated, 'utf-8')
+  fs.writeFileSync(paths.newsFile, updated, 'utf-8')
 }
 
 // POST /api/admin/news/batch-publish
-// body: { ids: string[]; password: string; action: 'publish' | 'discard' }
 export async function POST(request: NextRequest) {
   try {
+    const fs = nodeRequire('fs')
+    const path = nodeRequire('path')
+    if (!fs || !path) {
+      return NextResponse.json(
+        { success: false, error: '边缘环境不支持文件系统操作，请在本地开发环境使用' },
+        { status: 503 }
+      )
+    }
+
     const body = await request.json()
     const { ids, password, action } = body || {}
 
@@ -146,7 +175,6 @@ export async function POST(request: NextRequest) {
           ok: false,
           error: e instanceof Error ? e.message : '处理失败',
         })
-        // 失败的保留在草稿区
         remaining.push(d)
       }
     }

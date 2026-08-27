@@ -1,13 +1,17 @@
 export const runtime = 'edge';
 
 import { NextRequest, NextResponse } from 'next/server'
-import { readFileSync, writeFileSync } from 'node:fs'
-import path from 'node:path'
 
 export const dynamic = 'force-dynamic'
 
-const DRAFT_FILE = path.join(process.cwd(), 'data', 'news-draft.ts')
-const NEWS_FILE = path.join(process.cwd(), 'data', 'news.ts')
+// 隐藏 require 调用，避免 webpack 打包 Node.js 原生模块
+function nodeRequire(name: string): any {
+  try {
+    return (0, eval)('require')(name)
+  } catch {
+    return null
+  }
+}
 
 type NewsDraft = {
   id: string
@@ -21,13 +25,11 @@ type NewsDraft = {
   status: 'draft'
 }
 
-// 从 TS 文件中提取 export const xxx: Type[] = [...] 数组(括号匹配,忽略字符串内括号)
-// 注意: 数组内容由 JSON.stringify 生成,字符串统一用双引号,故只识别双引号边界
 function extractArray(raw: string, marker: string): NewsDraft[] {
   const start = raw.indexOf(marker)
   if (start === -1) return []
   const arrStart = start + marker.length
-  let depth = 1 // marker 以 '[' 结尾
+  let depth = 1
   let inStr = false
   for (let i = arrStart; i < raw.length; i++) {
     const c = raw[i]
@@ -48,9 +50,21 @@ function extractArray(raw: string, marker: string): NewsDraft[] {
   return []
 }
 
+function getFilePaths() {
+  const path = nodeRequire('path')
+  if (!path) return null
+  return {
+    draftFile: path.join(process.cwd(), 'data', 'news-draft.ts'),
+    newsFile: path.join(process.cwd(), 'data', 'news.ts'),
+  }
+}
+
 function readDrafts(): NewsDraft[] {
   try {
-    const raw = readFileSync(DRAFT_FILE, 'utf-8')
+    const fs = nodeRequire('fs')
+    const paths = getFilePaths()
+    if (!fs || !paths) return []
+    const raw = fs.readFileSync(paths.draftFile, 'utf-8')
     return extractArray(raw, 'export const newsDrafts: NewsDraft[] = [')
   } catch {
     return []
@@ -58,6 +72,9 @@ function readDrafts(): NewsDraft[] {
 }
 
 function writeDrafts(drafts: NewsDraft[]) {
+  const fs = nodeRequire('fs')
+  const paths = getFilePaths()
+  if (!fs || !paths) return
   const output = `// 草稿区: GitHub Actions 自动抓取写入,人工在 /admin/news 审核发布
 // 本文件会被 scripts/fetch-news.mjs 定时覆盖,请勿手工编辑数据
 
@@ -79,16 +96,18 @@ export function getNewsDrafts(): NewsDraft[] {
   return newsDrafts
 }
 `
-  writeFileSync(DRAFT_FILE, output, 'utf-8')
+  fs.writeFileSync(paths.draftFile, output, 'utf-8')
 }
 
 function escapeSingleQuote(s: string) {
   return s.replace(/\\/g, '\\\\').replace(/'/g, "\\'")
 }
 
-// 把一条草稿写入 data/news.ts(插入数组头部)
 function appendToNews(item: NewsDraft) {
-  const raw = readFileSync(NEWS_FILE, 'utf-8')
+  const fs = nodeRequire('fs')
+  const paths = getFilePaths()
+  if (!fs || !paths) throw new Error('文件系统不可用')
+  const raw = fs.readFileSync(paths.newsFile, 'utf-8')
   const marker = 'export const newsItems: NewsItem[] = ['
   const idx = raw.indexOf(marker)
   if (idx === -1) throw new Error('data/news.ts 格式异常: 找不到 newsItems 数组')
@@ -106,11 +125,20 @@ function appendToNews(item: NewsDraft) {
 
   const insertAt = raw.indexOf('[', idx) + 1
   const updated = raw.slice(0, insertAt) + '\n' + entry + raw.slice(insertAt)
-  writeFileSync(NEWS_FILE, updated, 'utf-8')
+  fs.writeFileSync(paths.newsFile, updated, 'utf-8')
 }
 
 export async function POST(request: NextRequest) {
   try {
+    const fs = nodeRequire('fs')
+    const path = nodeRequire('path')
+    if (!fs || !path) {
+      return NextResponse.json(
+        { success: false, error: '边缘环境不支持文件系统操作，请在本地开发环境使用' },
+        { status: 503 }
+      )
+    }
+
     const body = await request.json()
     const { id, password, action } = body || {}
 
@@ -129,12 +157,10 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === 'discard') {
-      // 丢弃: 仅从草稿区删除
       writeDrafts(drafts.filter((d) => d.id !== id))
       return NextResponse.json({ success: true, message: '已丢弃' })
     }
 
-    // 发布: 写入 data/news.ts 并从草稿区删除
     appendToNews(draft)
     writeDrafts(drafts.filter((d) => d.id !== id))
     return NextResponse.json({ success: true, message: '已发布到 data/news.ts' })
