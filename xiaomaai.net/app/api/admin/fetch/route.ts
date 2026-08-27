@@ -1,11 +1,9 @@
-﻿export const runtime = 'edge';
+export const runtime = 'edge';
 
 import { NextRequest, NextResponse } from 'next/server'
-import { spawn } from 'child_process'
-
+import { spawn } from 'node:child_process'
 
 export const dynamic = 'force-dynamic'
-export const runtime = 'nodejs'
 
 // POST /api/admin/fetch — 统一抓取入口(dev 模式 spawn 脚本,生产模式拦截)
 // body: { type: 'news' | 'tools', source?: string, password: string }

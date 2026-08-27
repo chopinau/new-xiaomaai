@@ -1,12 +1,10 @@
-﻿export const runtime = 'edge';
+export const runtime = 'edge';
 
 import { NextRequest, NextResponse } from 'next/server'
-import { readFileSync, writeFileSync } from 'fs'
-import path from 'path'
-
+import { readFileSync, writeFileSync } from 'node:fs'
+import path from 'node:path'
 
 export const dynamic = 'force-dynamic'
-export const runtime = 'nodejs'
 
 const DRAFT_FILE = path.join(process.cwd(), 'data', 'news-draft.ts')
 const NEWS_FILE = path.join(process.cwd(), 'data', 'news.ts')
