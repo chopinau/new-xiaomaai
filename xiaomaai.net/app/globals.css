@@ -295,3 +295,168 @@ button:active:not(:disabled), a:active, [role="button"]:active {
 .scrollbar-none::-webkit-scrollbar {
   display: none;
 }
+
+/* ============================================================
+   新闻正文排版（模仿 Cocoloop 风格）
+   ============================================================ */
+.news-content {
+  font-size: 15px;
+  line-height: 1.8;
+  color: #1e1b2e;
+  letter-spacing: 0.02em;
+}
+
+.news-content p {
+  margin-bottom: 1.2em;
+  line-height: 1.85;
+}
+
+.news-content h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-top: 2em;
+  margin-bottom: 0.8em;
+  line-height: 1.4;
+  color: #1e1b2e;
+}
+
+.news-content h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-top: 1.6em;
+  margin-bottom: 0.6em;
+  color: #1e1b2e;
+}
+
+.news-content h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin-top: 1.4em;
+  margin-bottom: 0.5em;
+  color: #1e1b2e;
+}
+
+/* 引用块：红色左边框 + 浅灰背景（Cocoloop 风格） */
+.news-content blockquote {
+  border-left: 3px solid #ef4444;
+  background: #fafafa;
+  padding: 0.8em 1.2em;
+  margin: 1.2em 0;
+  color: #555;
+  font-style: italic;
+  border-radius: 0 6px 6px 0;
+}
+
+.news-content blockquote p {
+  margin-bottom: 0.4em;
+}
+
+.news-content blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* 列表 */
+.news-content ul,
+.news-content ol {
+  padding-left: 1.6em;
+  margin-bottom: 1.2em;
+}
+
+.news-content ul {
+  list-style-type: disc;
+}
+
+.news-content ol {
+  list-style-type: decimal;
+}
+
+.news-content li {
+  margin-bottom: 0.4em;
+  line-height: 1.8;
+}
+
+/* 链接 */
+.news-content a {
+  color: #7c3aed;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.2s;
+}
+
+.news-content a:hover {
+  color: #4c1d95;
+}
+
+/* 图片 */
+.news-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin: 1.2em 0;
+}
+
+/* 代码 */
+.news-content code {
+  background: #f3f0fa;
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+  font-size: 0.88em;
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+}
+
+.news-content pre {
+  background: #1e1b2e;
+  color: #e8e4f0;
+  padding: 1em 1.2em;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1.2em 0;
+  font-size: 0.88em;
+  line-height: 1.6;
+}
+
+.news-content pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+/* 加粗 */
+.news-content strong {
+  font-weight: 700;
+  color: #1e1b2e;
+}
+
+/* 斜体 */
+.news-content em {
+  font-style: italic;
+  color: #555;
+}
+
+/* 分隔线 */
+.news-content hr {
+  border: none;
+  border-top: 1px solid #e8e4f0;
+  margin: 2em 0;
+}
+
+/* 表格 */
+.news-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.2em 0;
+  font-size: 0.9em;
+}
+
+.news-content th,
+.news-content td {
+  border: 1px solid #e8e4f0;
+  padding: 0.5em 0.8em;
+  text-align: left;
+}
+
+.news-content th {
+  background: #f3f0fa;
+  font-weight: 600;
+}

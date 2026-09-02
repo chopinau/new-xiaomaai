@@ -1,17 +1,11 @@
-export const runtime = 'edge';
+// 仅限本地开发环境使用，需要文件系统读写能力
+export const runtime = 'nodejs';
 
 import { NextRequest, NextResponse } from 'next/server'
+import { promises as fs } from 'node:fs'
+import path from 'node:path'
 
 export const dynamic = 'force-dynamic'
-
-// 隐藏 require 调用，避免 webpack 打包 Node.js 原生模块
-function nodeRequire(name: string): any {
-  try {
-    return (0, eval)('require')(name)
-  } catch {
-    return null
-  }
-}
 
 type NewsDraft = {
   id: string
@@ -19,6 +13,8 @@ type NewsDraft = {
   source: string
   url: string
   summary: string
+  content: string
+  coverImage?: string
   category: 'llm' | 'opensource' | 'business' | 'funding'
   publishedAt: string
   fetchedAt: string
@@ -51,30 +47,24 @@ function extractArray(raw: string, marker: string): NewsDraft[] {
 }
 
 function getFilePaths() {
-  const path = nodeRequire('path')
-  if (!path) return null
   return {
     draftFile: path.join(process.cwd(), 'data', 'news-draft.ts'),
     newsFile: path.join(process.cwd(), 'data', 'news.ts'),
   }
 }
 
-function readDrafts(): NewsDraft[] {
+async function readDrafts(): Promise<NewsDraft[]> {
   try {
-    const fs = nodeRequire('fs')
     const paths = getFilePaths()
-    if (!fs || !paths) return []
-    const raw = fs.readFileSync(paths.draftFile, 'utf-8')
+    const raw = await fs.readFile(paths.draftFile, 'utf-8')
     return extractArray(raw, 'export const newsDrafts: NewsDraft[] = [')
   } catch {
     return []
   }
 }
 
-function writeDrafts(drafts: NewsDraft[]) {
-  const fs = nodeRequire('fs')
+async function writeDrafts(drafts: NewsDraft[]) {
   const paths = getFilePaths()
-  if (!fs || !paths) return
   const output = `// 草稿区: GitHub Actions 自动抓取写入,人工在 /admin/news 审核发布
 // 本文件会被 scripts/fetch-news.mjs 定时覆盖,请勿手工编辑数据
 
@@ -96,50 +86,49 @@ export function getNewsDrafts(): NewsDraft[] {
   return newsDrafts
 }
 `
-  fs.writeFileSync(paths.draftFile, output, 'utf-8')
+  await fs.writeFile(paths.draftFile, output, 'utf-8')
 }
 
-function escapeSingleQuote(s: string) {
-  return (s || '').replace(/\\/g, '\\\\').replace(/'/g, "\\'")
+function parseRSSDate(dateStr: string): string {
+  if (!dateStr) return new Date().toISOString().slice(0, 10)
+  try {
+    const d = new Date(dateStr)
+    if (isNaN(d.getTime())) return new Date().toISOString().slice(0, 10)
+    return d.toISOString().slice(0, 10)
+  } catch {
+    return new Date().toISOString().slice(0, 10)
+  }
 }
 
-function appendToNews(item: NewsDraft) {
-  const fs = nodeRequire('fs')
+async function appendToNews(item: NewsDraft) {
   const paths = getFilePaths()
-  if (!fs || !paths) throw new Error('文件系统不可用')
-  const raw = fs.readFileSync(paths.newsFile, 'utf-8')
+  const raw = await fs.readFile(paths.newsFile, 'utf-8')
   const marker = 'export const newsItems: NewsItem[] = ['
   const idx = raw.indexOf(marker)
   if (idx === -1) throw new Error('data/news.ts 格式异常: 找不到 newsItems 数组')
 
-  const date = (item.publishedAt || '').slice(0, 10)
+  const date = parseRSSDate(item.publishedAt)
+  // 用 JSON.stringify 正确转义所有特殊字符（换行、反引号、引号等）
   const entry = `  {
-    id: '${escapeSingleQuote(item.id)}',
-    date: '${escapeSingleQuote(date)}',
-    title: '${escapeSingleQuote(item.title)}',
-    summary: '${escapeSingleQuote(item.summary)}',
-    category: '${escapeSingleQuote(item.category)}',
-    source: '${escapeSingleQuote(item.source)}',
-    url: '${escapeSingleQuote(item.url)}',
+    id: ${JSON.stringify(item.id)},
+    date: ${JSON.stringify(date)},
+    title: ${JSON.stringify(item.title)},
+    summary: ${JSON.stringify(item.summary)},
+    content: ${JSON.stringify(item.content || '')},
+    coverImage: ${JSON.stringify(item.coverImage || '')},
+    category: ${JSON.stringify(item.category)},
+    source: ${JSON.stringify(item.source)},
+    url: ${JSON.stringify(item.url)},
   },`
 
-  const insertAt = raw.indexOf('[', idx) + 1
+  const insertAt = idx + marker.length
   const updated = raw.slice(0, insertAt) + '\n' + entry + raw.slice(insertAt)
-  fs.writeFileSync(paths.newsFile, updated, 'utf-8')
+  await fs.writeFile(paths.newsFile, updated, 'utf-8')
 }
 
 // POST /api/admin/news/batch-publish
 export async function POST(request: NextRequest) {
   try {
-    const fs = nodeRequire('fs')
-    const path = nodeRequire('path')
-    if (!fs || !path) {
-      return NextResponse.json(
-        { success: false, error: '边缘环境不支持文件系统操作，请在本地开发环境使用' },
-        { status: 503 }
-      )
-    }
-
     const body = await request.json()
     const { ids, password, action } = body || {}
 
@@ -154,7 +143,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: 'action 必须是 publish 或 discard' }, { status: 400 })
     }
 
-    const drafts = readDrafts()
+    const drafts = await readDrafts()
     const idSet = new Set(ids)
     const results: Array<{ id: string; ok: boolean; error?: string }> = []
     const remaining: NewsDraft[] = []
@@ -166,7 +155,7 @@ export async function POST(request: NextRequest) {
       }
       try {
         if (action === 'publish') {
-          appendToNews(d)
+          await appendToNews(d)
         }
         results.push({ id: d.id, ok: true })
       } catch (e) {
@@ -179,7 +168,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    writeDrafts(remaining)
+    await writeDrafts(remaining)
 
     const successCount = results.filter((r) => r.ok).length
     const failCount = results.length - successCount

@@ -31,6 +31,8 @@ type NewsDraft = {
   source: string
   url: string
   summary: string
+  content: string
+  coverImage?: string
   category: 'llm' | 'opensource' | 'business' | 'funding'
   publishedAt: string
   fetchedAt: string
@@ -61,6 +63,9 @@ export default function AdminNewsPage() {
   const [fetchPayload, setFetchPayload] = useState<FetchPayload | null>(null)
   const [showFetchLog, setShowFetchLog] = useState(false)
   const [fetching, setFetching] = useState(false)
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set())
+  const [page, setPage] = useState(1)
+  const pageSize = 20
 
   const loadDrafts = useCallback(async (pwd: string, opts?: { source?: string; search?: string }) => {
     setLoading(true)
@@ -98,11 +103,17 @@ export default function AdminNewsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // 筛选/搜索变化时重新加载
+  // 筛选/搜索变化时重新加载并重置页码
   useEffect(() => {
+    setPage(1)
     if (authed) loadDrafts(password, { source: sourceFilter, search })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sourceFilter, search, authed])
+
+  // 分页计算
+  const totalPages = Math.max(1, Math.ceil(drafts.length / pageSize))
+  const safePage = Math.min(page, totalPages)
+  const pageDrafts = drafts.slice((safePage - 1) * pageSize, safePage * pageSize)
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -193,6 +204,15 @@ export default function AdminNewsPage() {
     } else {
       setSelected(new Set(drafts.map((d) => d.id)))
     }
+  }
+
+  const toggleExpand = (id: string) => {
+    setExpandedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
   }
 
   const handleFetchNews = () => {
@@ -425,7 +445,7 @@ export default function AdminNewsPage() {
               </button>
             </div>
 
-            {drafts.map((draft) => {
+            {pageDrafts.map((draft) => {
               const cat = CATEGORY_LABELS[draft.category] || CATEGORY_LABELS.business
               const isSelected = selected.has(draft.id)
               const isBusy = busyIds.has(draft.id)
@@ -450,28 +470,50 @@ export default function AdminNewsPage() {
                     </button>
 
                     <div className="min-w-0 flex-1">
-                      <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                        <div className="min-w-0 flex-1">
-                          <div className="mb-2 flex flex-wrap items-center gap-2">
-                            <h3 className="text-sm font-bold leading-snug">{draft.title}</h3>
-                            <Badge variant="outline" className={cat.className}>{cat.label}</Badge>
-                          </div>
-                          <p className="line-clamp-2 text-sm text-muted-foreground">{draft.summary}</p>
-                          <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-                            <span className="inline-flex items-center gap-1">
-                              <Newspaper className="h-3 w-3" />{draft.source}
-                            </span>
-                            <span className="inline-flex items-center gap-1">
-                              <Clock className="h-3 w-3" />
-                              {draft.publishedAt ? new Date(draft.publishedAt).toLocaleDateString('zh-CN') : '-'} 抓取
-                            </span>
-                            <a
-                              href={draft.url}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="inline-flex items-center gap-1 text-brand-purple hover:underline"
-                            >
-                              原文 <ExternalLink className="h-3 w-3" />
+                        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                          <div className="min-w-0 flex-1">
+                            <div className="mb-2 flex flex-wrap items-center gap-2">
+                              <h3 className="text-sm font-bold leading-snug">{draft.title}</h3>
+                              <Badge variant="outline" className={cat.className}>{cat.label}</Badge>
+                            </div>
+                            {draft.coverImage && (
+                              <img
+                                src={draft.coverImage}
+                                alt=""
+                                className="mb-2 h-32 w-full rounded object-cover"
+                                loading="lazy"
+                              />
+                            )}
+                            <p className="line-clamp-2 text-sm text-muted-foreground">{draft.summary}</p>
+                            {/* 全文预览 */}
+                            {expandedIds.has(draft.id) && draft.content && (
+                              <div
+                                className="mt-2 max-h-96 overflow-y-auto rounded border border-border bg-muted/30 p-3 text-xs prose prose-sm max-w-none"
+                                dangerouslySetInnerHTML={{ __html: draft.content }}
+                              />
+                            )}
+                            <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
+                              <span className="inline-flex items-center gap-1">
+                                <Newspaper className="h-3 w-3" />{draft.source}
+                              </span>
+                              <span className="inline-flex items-center gap-1">
+                                <Clock className="h-3 w-3" />
+                                {draft.publishedAt ? new Date(draft.publishedAt).toLocaleDateString('zh-CN') : '-'} 抓取
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => toggleExpand(draft.id)}
+                                className="inline-flex items-center gap-1 text-brand-purple hover:underline"
+                              >
+                                {expandedIds.has(draft.id) ? '收起全文' : '预览全文'}
+                              </button>
+                              <a
+                                href={draft.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-brand-purple hover:underline"
+                              >
+                                原文 <ExternalLink className="h-3 w-3" />
                             </a>
                           </div>
                         </div>
@@ -503,6 +545,33 @@ export default function AdminNewsPage() {
                 </Card>
               )
             })}
+          </div>
+        )}
+
+        {/* 分页 */}
+        {drafts.length > pageSize && (
+          <div className="mt-6 flex items-center justify-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={safePage <= 1}
+              onClick={() => setPage(safePage - 1)}
+              className="text-xs"
+            >
+              上一页
+            </Button>
+            <span className="text-sm text-muted-foreground">
+              第 {safePage} / {totalPages} 页（共 {drafts.length} 条）
+            </span>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={safePage >= totalPages}
+              onClick={() => setPage(safePage + 1)}
+              className="text-xs"
+            >
+              下一页
+            </Button>
           </div>
         )}
 

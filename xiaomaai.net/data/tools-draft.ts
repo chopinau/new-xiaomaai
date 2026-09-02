@@ -1,13 +1,24 @@
-// 草稿区: GitHub Actions 抓取热门 AI 工具后写入,人工在 /admin/tools 审核入库
-// 本文件会被 scripts/fetch-trending.mjs 定时覆盖,请勿手工编辑数据
-
-import type { Tool } from './tools'
+// 草稿区: import 脚本自动写入,人工在 /admin/tools 审核后入库
+// 清理时间: 2026-08-31T09:17:01.872Z
+// 清理规则: 移除 source="producthunt" 的 13 条无价值草稿
 
 export interface ToolDraft {
-  source: 'github-trending' | 'producthunt' | 'submit' | 'faxianai' | 'toolify' | 'aitaaft' | 'futurepedia' | 'aibase' | 'ai-bot' | 'ai-nav'
-  sourceUrl: string
+  source: string
+  sourceUrl?: string
   fetchedAt: string
-  tool: Omit<Tool, 'id'> & { slug: string }
+  tool: {
+    slug: string
+    name: string
+    description: string
+    url: string
+    logoUrl?: string
+    category: string
+    tags?: string[]
+    pricing?: string
+    rating?: number
+    featured?: boolean
+    [key: string]: unknown
+  }
 }
 
 export const toolDrafts: ToolDraft[] = [
@@ -584,266 +595,6 @@ export const toolDrafts: ToolDraft[] = [
       "views": 0,
       "createdAt": "2025-09-07T09:50:24Z",
       "updatedAt": "2026-08-11T05:36:17Z"
-    }
-  },
-  {
-    "source": "producthunt",
-    "sourceUrl": "https://www.producthunt.com/products/portfolio-lab",
-    "tool": {
-      "slug": "portfolio-lab",
-      "name": "Portfolio Lab",
-      "description": "Discussion\n            |\n            Link",
-      "url": "https://www.producthunt.com/products/portfolio-lab",
-      "logoUrl": "",
-      "category": "chat",
-      "tags": [
-        "AI"
-      ],
-      "pricing": "freemium",
-      "rating": 0,
-      "views": 0,
-      "createdAt": "2026-07-29T14:22:05.000Z",
-      "updatedAt": "2026-08-11T05:37:00.900Z"
-    }
-  },
-  {
-    "source": "producthunt",
-    "sourceUrl": "https://www.producthunt.com/products/vidaya",
-    "tool": {
-      "slug": "vidaya",
-      "name": "Vidaya",
-      "description": "Discussion\n            |\n            Link",
-      "url": "https://www.producthunt.com/products/vidaya",
-      "logoUrl": "",
-      "category": "chat",
-      "tags": [
-        "AI"
-      ],
-      "pricing": "freemium",
-      "rating": 0,
-      "views": 0,
-      "createdAt": "2026-08-06T07:21:22.000Z",
-      "updatedAt": "2026-08-11T05:37:00.901Z"
-    }
-  },
-  {
-    "source": "producthunt",
-    "sourceUrl": "https://www.producthunt.com/products/remix-8",
-    "tool": {
-      "slug": "remix",
-      "name": "Remix",
-      "description": "Discussion\n            |\n            Link",
-      "url": "https://www.producthunt.com/products/remix-8",
-      "logoUrl": "",
-      "category": "chat",
-      "tags": [
-        "AI"
-      ],
-      "pricing": "freemium",
-      "rating": 0,
-      "views": 0,
-      "createdAt": "2026-08-06T02:16:52.000Z",
-      "updatedAt": "2026-08-11T05:37:00.901Z"
-    }
-  },
-  {
-    "source": "producthunt",
-    "sourceUrl": "https://www.producthunt.com/products/prime-intellect",
-    "tool": {
-      "slug": "prime-agent",
-      "name": "Prime Agent",
-      "description": "Discussion\n            |\n            Link",
-      "url": "https://www.producthunt.com/products/prime-intellect",
-      "logoUrl": "",
-      "category": "chat",
-      "tags": [
-        "AI"
-      ],
-      "pricing": "freemium",
-      "rating": 0,
-      "views": 0,
-      "createdAt": "2026-08-10T04:13:06.000Z",
-      "updatedAt": "2026-08-11T05:37:00.901Z"
-    }
-  },
-  {
-    "source": "producthunt",
-    "sourceUrl": "https://www.producthunt.com/products/oqoqo",
-    "tool": {
-      "slug": "oqoqo",
-      "name": "oqoqo",
-      "description": "Discussion\n            |\n            Link",
-      "url": "https://www.producthunt.com/products/oqoqo",
-      "logoUrl": "",
-      "category": "chat",
-      "tags": [
-        "AI"
-      ],
-      "pricing": "freemium",
-      "rating": 0,
-      "views": 0,
-      "createdAt": "2026-07-17T21:16:17.000Z",
-      "updatedAt": "2026-08-11T05:37:00.901Z"
-    }
-  },
-  {
-    "source": "producthunt",
-    "sourceUrl": "https://www.producthunt.com/products/genspark",
-    "tool": {
-      "slug": "secondbrain-note-by-genspark",
-      "name": "SecondBrain Note by GenSpark",
-      "description": "Discussion\n            |\n            Link",
-      "url": "https://www.producthunt.com/products/genspark",
-      "logoUrl": "",
-      "category": "chat",
-      "tags": [
-        "AI"
-      ],
-      "pricing": "freemium",
-      "rating": 0,
-      "views": 0,
-      "createdAt": "2026-08-09T21:55:17.000Z",
-      "updatedAt": "2026-08-11T05:37:00.901Z"
-    }
-  },
-  {
-    "source": "producthunt",
-    "sourceUrl": "https://www.producthunt.com/products/ai-group-call",
-    "tool": {
-      "slug": "ai-group-call",
-      "name": "AI Group Call",
-      "description": "Discussion\n            |\n            Link",
-      "url": "https://www.producthunt.com/products/ai-group-call",
-      "logoUrl": "",
-      "category": "chat",
-      "tags": [
-        "AI"
-      ],
-      "pricing": "freemium",
-      "rating": 0,
-      "views": 0,
-      "createdAt": "2026-08-09T16:50:42.000Z",
-      "updatedAt": "2026-08-11T05:37:00.901Z"
-    }
-  },
-  {
-    "source": "producthunt",
-    "sourceUrl": "https://www.producthunt.com/products/paritok",
-    "tool": {
-      "slug": "paritok",
-      "name": "Paritok",
-      "description": "Discussion\n            |\n            Link",
-      "url": "https://www.producthunt.com/products/paritok",
-      "logoUrl": "",
-      "category": "chat",
-      "tags": [
-        "AI"
-      ],
-      "pricing": "freemium",
-      "rating": 0,
-      "views": 0,
-      "createdAt": "2026-07-20T08:39:12.000Z",
-      "updatedAt": "2026-08-11T05:37:00.901Z"
-    }
-  },
-  {
-    "source": "producthunt",
-    "sourceUrl": "https://www.producthunt.com/products/argos-2",
-    "tool": {
-      "slug": "argos",
-      "name": "Argos",
-      "description": "Discussion\n            |\n            Link",
-      "url": "https://www.producthunt.com/products/argos-2",
-      "logoUrl": "",
-      "category": "chat",
-      "tags": [
-        "AI"
-      ],
-      "pricing": "freemium",
-      "rating": 0,
-      "views": 0,
-      "createdAt": "2026-08-08T23:41:16.000Z",
-      "updatedAt": "2026-08-11T05:37:00.901Z"
-    }
-  },
-  {
-    "source": "producthunt",
-    "sourceUrl": "https://www.producthunt.com/products/docsalot-2",
-    "tool": {
-      "slug": "docsalot-cli",
-      "name": "DocsAlot CLI",
-      "description": "Discussion\n            |\n            Link",
-      "url": "https://www.producthunt.com/products/docsalot-2",
-      "logoUrl": "",
-      "category": "productivity",
-      "tags": [
-        "AI"
-      ],
-      "pricing": "freemium",
-      "rating": 0,
-      "views": 0,
-      "createdAt": "2026-08-07T19:43:09.000Z",
-      "updatedAt": "2026-08-11T05:37:00.901Z"
-    }
-  },
-  {
-    "source": "producthunt",
-    "sourceUrl": "https://www.producthunt.com/products/omniwork-2",
-    "tool": {
-      "slug": "omniwork",
-      "name": "Omniwork",
-      "description": "Discussion\n            |\n            Link",
-      "url": "https://www.producthunt.com/products/omniwork-2",
-      "logoUrl": "",
-      "category": "chat",
-      "tags": [
-        "AI"
-      ],
-      "pricing": "freemium",
-      "rating": 0,
-      "views": 0,
-      "createdAt": "2026-07-14T08:08:56.000Z",
-      "updatedAt": "2026-08-11T05:37:00.901Z"
-    }
-  },
-  {
-    "source": "producthunt",
-    "sourceUrl": "https://www.producthunt.com/products/prompt-golf",
-    "tool": {
-      "slug": "prompt-golf",
-      "name": "Prompt Golf",
-      "description": "Discussion\n            |\n            Link",
-      "url": "https://www.producthunt.com/products/prompt-golf",
-      "logoUrl": "",
-      "category": "chat",
-      "tags": [
-        "AI"
-      ],
-      "pricing": "freemium",
-      "rating": 0,
-      "views": 0,
-      "createdAt": "2026-07-30T15:38:50.000Z",
-      "updatedAt": "2026-08-11T05:37:00.901Z"
-    }
-  },
-  {
-    "source": "producthunt",
-    "sourceUrl": "https://www.producthunt.com/products/agentconnect",
-    "tool": {
-      "slug": "agentconnect",
-      "name": "AgentConnect",
-      "description": "Discussion\n            |\n            Link",
-      "url": "https://www.producthunt.com/products/agentconnect",
-      "logoUrl": "",
-      "category": "chat",
-      "tags": [
-        "AI"
-      ],
-      "pricing": "freemium",
-      "rating": 0,
-      "views": 0,
-      "createdAt": "2026-08-01T05:40:40.000Z",
-      "updatedAt": "2026-08-11T05:24:41.517Z"
     }
   },
   {
@@ -1607,41 +1358,771 @@ export const toolDrafts: ToolDraft[] = [
       "createdAt": "2026-08-12T07:36:24.423Z",
       "updatedAt": "2026-08-13T07:55:47.097Z"
     }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/28167.html",
+    "fetchedAt": "2026-08-24T08:16:49.903Z",
+    "tool": {
+      "slug": "davinci-ai",
+      "name": "DaVinci AI",
+      "description": "免费在线生成 AI 图片和 AI 视频，输入一句话即可出图出片。支持文生图、图生图、文生视频、图生视频，打开网页就能用，无需下载安装，新用户注册即送生成额度。",
+      "url": "https://www.davinci.best/",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2026/08/20260814164535-93059.jpeg",
+      "category": "image",
+      "tags": [
+        "AI视频"
+      ],
+      "pricing": "free",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:16:49.903Z",
+      "updatedAt": "2026-08-24T08:16:49.903Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/28282.html",
+    "fetchedAt": "2026-08-24T08:17:02.368Z",
+    "tool": {
+      "slug": "prized",
+      "name": "Prized",
+      "description": "AI搭建企业内部工具,Prized 让运营、客服、财务这些不写代码的团队用 AI 搭出自己的内部工具，重点在后半句：搭出来的东西是安全的。三条约束是它区别于普通“AI 生成应用”的地方。一是公司数据预先接好，管理员一次性批准每个连接器并划定它能看到的范围，之后所有工具复用这套授权。二是每一次数据访问都有审计记录。三是一键",
+      "url": "https://prized.dev/",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2026/08/20260822144234-dba87.jpeg",
+      "category": "code",
+      "tags": [
+        "智能体"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:02.368Z",
+      "updatedAt": "2026-08-24T08:17:02.368Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/28281.html",
+    "fetchedAt": "2026-08-24T08:17:02.982Z",
+    "tool": {
+      "slug": "wizstar",
+      "name": "Wizstar",
+      "description": "AI数字人商品视频生成,Wizstar 是一个偏电商和营销场景的 AI 创作平台，输入可以是一段文字、一张图片，也可以直接丢一个商品链接，输出是视频、数字人口播或者商品广告片。商品链接直接转视频这条路径是它比较讨巧的设计。跑通之后，从选品到出片中间的素材整理、脚本撰写、画面生成几步被压成了一步，对需要给大量 SKU 铺视频",
+      "url": "https://wizstar.com/",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2026/08/20260822144234-77be0.jpeg",
+      "category": "image",
+      "tags": [
+        "AI图像"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:02.982Z",
+      "updatedAt": "2026-08-24T08:17:02.982Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/28280.html",
+    "fetchedAt": "2026-08-24T08:17:03.585Z",
+    "tool": {
+      "slug": "meetstream-ai",
+      "name": "MeetStream AI",
+      "description": "会议机器人统一API,MeetStream 提供的是一套统一的会议机器人 API，用一个接口同时对接 Zoom、Google Meet 和 Microsoft Teams，让机器人加入会议并完成录制、实时推流和转写。它想省掉的是集成这件苦差事。三家会议平台各有各的接入规则、各有各的坑，一个做 AI 会议助手的团队往往要先",
+      "url": "https://meetstream.ai/",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2026/08/20260822144234-aa11a.jpeg",
+      "category": "code",
+      "tags": [
+        "AI"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:03.585Z",
+      "updatedAt": "2026-08-24T08:17:03.585Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/28279.html",
+    "fetchedAt": "2026-08-24T08:17:04.176Z",
+    "tool": {
+      "slug": "bitdrift",
+      "name": "bitdrift",
+      "description": "AI智能体移动可观测平台,bitdrift 做的是移动端可观测性，但切入角度和传统 APM 不一样——它把数据开放给 AI 智能体，让 Agent 自己去查崩溃、性能问题和用户路径。关键词是“无采样”。传统方案为了控制成本会对日志和指标做采样，结果是排查具体问题时经常缺关键那一段。bitdrift 的说法是能覆盖 100%",
+      "url": "https://bitdrift.ai/",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2026/08/20260822144234-dfb94.jpeg",
+      "category": "chat",
+      "tags": [
+        "智能体"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:04.176Z",
+      "updatedAt": "2026-08-24T08:17:04.176Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/28278.html",
+    "fetchedAt": "2026-08-24T08:17:04.769Z",
+    "tool": {
+      "slug": "nobodywho",
+      "name": "NobodyWho",
+      "description": "端侧本地大模型推理引擎,NobodyWho 是一个开源推理引擎，目标是让大模型跑在任意设备上——手机、桌面、嵌入式都算在内，文本、视觉、语音三类模型都支持。模型来源直接对接 Hugging Face，Mistral、OpenAI 开源模型、Liquid、Qwen、DeepSeek、Gemma 这些都能挑来用，格式是 ggu",
+      "url": "https://www.nobodywho.ai/",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2026/08/20260822144234-124e6.jpeg",
+      "category": "audio",
+      "tags": [
+        "AI"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:04.769Z",
+      "updatedAt": "2026-08-24T08:17:04.769Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/28277.html",
+    "fetchedAt": "2026-08-24T08:17:05.449Z",
+    "tool": {
+      "slug": "hynote",
+      "name": "HyNote",
+      "description": "AI会议录音笔记工具,HyNote 是一款 AI 笔记工具，输入端铺得很宽：现场录音、电话通话、上传音频、文本与 PDF、图片截图 OCR、YouTube 或视频链接、网页，甚至 Apple Watch 都能作为采集入口。输出端则围绕“能直接用”来设计。会议方向有纪要、讨论记录、待办跟进、邮件草稿和说话人识别；学习方向有",
+      "url": "https://hynote.ai/",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2026/08/20260822144234-de9ca.jpeg",
+      "category": "image",
+      "tags": [
+        "AI"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:05.449Z",
+      "updatedAt": "2026-08-24T08:17:05.449Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/28276.html",
+    "fetchedAt": "2026-08-24T08:17:06.032Z",
+    "tool": {
+      "slug": "checksum-ai",
+      "name": "Checksum AI",
+      "description": "AI自动生成端到端测试,Checksum 把自己定位成“编程智能体的测试搭子”，做的事是自动生成并维护 Playwright 端到端测试。它的判断很直接：AI 写代码的速度上来之后，测试覆盖率跟不上就成了新瓶颈。所以它给了三个协作的智能体——End-to-end Agent 生成可用的 Playwright 测试，应用改动",
+      "url": "https://checksum.ai/",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2026/08/20260822144234-259fb.jpeg",
+      "category": "code",
+      "tags": [
+        "AI"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:06.032Z",
+      "updatedAt": "2026-08-24T08:17:06.032Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/28275.html",
+    "fetchedAt": "2026-08-24T08:17:06.657Z",
+    "tool": {
+      "slug": "actx0",
+      "name": "Actx0",
+      "description": "AI智能体记忆基础设施,Actx0 是给 AI 智能体和应用做记忆层的托管服务，解决的是“每开一个新会话就失忆”这个老问题。它把记忆分成两类：会话记忆（session memories）保存单次交互过程中攒下来的上下文，工作区知识（workspace knowledge）保存跨会话长期有效的信息。检索延迟做到毫秒级，官方明",
+      "url": "https://actx0.com/",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2026/08/20260822144234-b0683.jpeg",
+      "category": "chat",
+      "tags": [
+        "智能体"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:06.657Z",
+      "updatedAt": "2026-08-24T08:17:06.657Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/28274.html",
+    "fetchedAt": "2026-08-24T08:17:07.251Z",
+    "tool": {
+      "slug": "loomi",
+      "name": "Loomi",
+      "description": "社媒AI图文视频创作平台,Loomi 对外的定位是社交媒体内容智能体，实际打开产品会发现它做的比这句话宽——Explore、Agent、AI Image、AI Video、LoomiTV、AI Chat 几个模块并列，是一个把多家模型聚到一起的创作平台。模型这一层铺得比较全，视频侧接了 Seedance 2 和 Seedan",
+      "url": "https://loomi.live/",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2026/08/20260822144234-531fb.jpeg",
+      "category": "video",
+      "tags": [
+        "AI助理",
+        "AI图像",
+        "智能体"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:07.251Z",
+      "updatedAt": "2026-08-24T08:17:07.251Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/28273.html",
+    "fetchedAt": "2026-08-24T08:17:07.848Z",
+    "tool": {
+      "slug": "lawbot脱敏猫",
+      "name": "Lawbot脱敏猫",
+      "description": "法律文档离线脱敏工具,Lawbot 脱敏猫解决的是一个很具体的矛盾：律师想用 AI 处理合同、诉状、判决书，但这些材料里的当事人信息不能上传。它的做法是把脱敏这一步前置到本机。纯离线桌面软件，Windows 和 macOS 都有，识别模型和 OCR 模型随安装包一次性下载到本地，处理过程不调用任何外部 API，也不上传文",
+      "url": "https://www.lawbotai.cn/",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2026/08/20260822144234-acd06.jpeg",
+      "category": "code",
+      "tags": [
+        "AI"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:07.848Z",
+      "updatedAt": "2026-08-24T08:17:07.848Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/28272.html",
+    "fetchedAt": "2026-08-24T08:17:08.461Z",
+    "tool": {
+      "slug": "cline",
+      "name": "Cline",
+      "description": "开源AI编程智能体,Cline 是一个开源的 AI 编程智能体，Apache 2.0 协议，全平台安装量超过 800 万，GitHub 星标 6.6 万以上。它不绑定任何模型厂商，你想接哪家就接哪家。形态给了三种：IDE 扩展、CLI 和 SDK。官方目前主推 CLI，一条 npm i -g cline 装完就能在终端",
+      "url": "https://cline.bot/",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2026/08/20260822144234-c7d72.jpeg",
+      "category": "code",
+      "tags": [
+        "智能体"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:08.461Z",
+      "updatedAt": "2026-08-24T08:17:08.461Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/28271.html",
+    "fetchedAt": "2026-08-24T08:17:09.048Z",
+    "tool": {
+      "slug": "renoise",
+      "name": "Renoise",
+      "description": "多模型AI视频图像套件,Renoise 把市面上主流的生成模型集中到了一个界面里，视频侧有 Seedance 2.5 / 2.0、可灵 3.0、MiniMax H3、Omni、Grok Video，图像侧有 Midjourney V7、GPT Image 2、Nano Banana Pro、Grok Image。同一个工作",
+      "url": "https://renoise.ai/",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2026/08/20260822144234-2d694.jpeg",
+      "category": "image",
+      "tags": [
+        "AI图像"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:09.048Z",
+      "updatedAt": "2026-08-24T08:17:09.048Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/28270.html",
+    "fetchedAt": "2026-08-24T08:17:10.125Z",
+    "tool": {
+      "slug": "qwenpaw",
+      "name": "QwenPaw",
+      "description": "个人AI智能体工作站,QwenPaw 是 AgentScope 团队做的个人 AI 智能体工作站，特点是跑在你自己的环境里——本地部署或者自己的云都可以，不必把数据交给第三方托管。它最实用的地方在渠道接入。钉钉、飞书、QQ、Discord、Telegram 等十多个渠道都能连，也就是说你可以在日常已经在用的聊天软件里直接",
+      "url": "https://qwenpaw.agentscope.io/",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2026/08/20260822144234-943fd.jpeg",
+      "category": "chat",
+      "tags": [
+        "AI助理"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:10.125Z",
+      "updatedAt": "2026-08-24T08:17:10.125Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/28269.html",
+    "fetchedAt": "2026-08-24T08:17:10.776Z",
+    "tool": {
+      "slug": "laper-ai",
+      "name": "Laper AI",
+      "description": "免费AI编剧剧本工具,Laper 是一款面向影视编剧的 AI 写作工具，定位很克制——它自己的宣传语是“没有 AI 味的 AI 编剧软件”，意思是只在编剧真正需要帮忙的环节介入，不替你写整个故事。核心功能有三块。一是剧本格式自动维护，行业标准的场景标题、动作、角色、对白、转场这些排版规则由工具兜住，编剧不用再手动调格式",
+      "url": "https://laper.ai/",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2026/08/20260822144234-56094.jpeg",
+      "category": "video",
+      "tags": [
+        "AI"
+      ],
+      "pricing": "free",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:10.776Z",
+      "updatedAt": "2026-08-24T08:17:10.776Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/28231.html",
+    "fetchedAt": "2026-08-24T08:17:11.455Z",
+    "tool": {
+      "slug": "tipkay",
+      "name": "TipKay",
+      "description": "面向小团队的按需AI员工平台,TipKay 是一个面向经营者和小团队的 AI 员工平台，思路是「按岗位找人」而不是按功能找工具。平台上列着小红书运营、抖音运营、公众号编辑、知乎博主、闲鱼运营、视频制作这些岗位，每个 AI 员工都预先配好了对应的岗位经验、工作流程和所需工具，打开就能上岗。 它跟普通 AI 助手的区别在于交付粒度",
+      "url": "https://www.tipkay.com/",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2026/08/20260821101049-7373f.jpeg",
+      "category": "video",
+      "tags": [
+        "AI助理",
+        "智能体"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:11.455Z",
+      "updatedAt": "2026-08-24T08:17:11.455Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/28230.html",
+    "fetchedAt": "2026-08-24T08:17:12.181Z",
+    "tool": {
+      "slug": "atoms",
+      "name": "Atoms",
+      "description": "AI建站与应用生成工具,Atoms 定位是「你团队的网站和应用创造者」，用一组 AI 员工帮你验证想法、做出产品、再去获取用户，整个过程不用写代码。它把自己包装成一支完整的 AI 团队而不是单个工具——你负责做决定，Agent 负责执行。 上手可以从模板开始，官方给的分类有 SaaS 应用、电商、内部工具和个人项目，站上能",
+      "url": "https://atoms.dev/",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2026/08/20260821100910-9cdd9.jpeg",
+      "category": "image",
+      "tags": [
+        "AI助理",
+        "智能体"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:12.181Z",
+      "updatedAt": "2026-08-24T08:17:12.181Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/28229.html",
+    "fetchedAt": "2026-08-24T08:17:12.784Z",
+    "tool": {
+      "slug": "loomy",
+      "name": "Loomy",
+      "description": "讯飞出品的桌面AI智能助理,Loomy 是科大讯飞推出的桌面级 AI 智能助理，装上就能用，不需要配置。官方给的适用场景包括自媒体运营、远程办公、日程管理、文件整理和电商运营，属于那种「什么杂活都能接一点」的通用型助手。 比较值得说的一点是它兼容 Openclaw 技能体系。这意味着社区已经写好的那些技能包可以直接拿来用，不用",
+      "url": "https://loomy.xunfei.cn/",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2026/08/20260821100845-60659.jpeg",
+      "category": "image",
+      "tags": [
+        "AI助理",
+        "智能体"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:12.784Z",
+      "updatedAt": "2026-08-24T08:17:12.784Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/28228.html",
+    "fetchedAt": "2026-08-24T08:17:13.390Z",
+    "tool": {
+      "slug": "catpaw",
+      "name": "CatPaw",
+      "description": "美团的全场景AI Agent平台,CatPaw 是美团推出的 AI Agent 平台，一个产品覆盖两类用户：普通用户能拿到一个开箱即用的 AI 智能工作台，企业则能用它来开发和托管自己的 Agent。 对个人来说，它就是一个能接手具体任务的智能工作台，不用配置就能开始用。对企业来说，价值在后半段——构建「AI 数字员工」，把原本靠人",
+      "url": "https://catpaw.meituan.com/",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2026/08/20260821100714-7d7e9.jpeg",
+      "category": "code",
+      "tags": [
+        "AI助理",
+        "智能体"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:13.390Z",
+      "updatedAt": "2026-08-24T08:17:13.390Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/28227.html",
+    "fetchedAt": "2026-08-24T08:17:19.501Z",
+    "tool": {
+      "slug": "百度搭子",
+      "name": "百度搭子",
+      "description": "百度出品的桌面端AI办公助手,百度搭子（DuMate）是百度智能云做的桌面端 AI 助手，主打「真干活」——你说需求，它跨应用、跨文件地把事执行完，而不是只给你一段回答。提供 macOS（M 系列芯片）和 Windows（win10 及以上）客户端，也有手机 App。 从官方给的场景看，重点押在办公自动化上：文件夹智能分类归档",
+      "url": "https://www.dumate.cn/",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2026/08/20260821192534-1acd0.jpeg",
+      "category": "chat",
+      "tags": [
+        "AI助理"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:19.501Z",
+      "updatedAt": "2026-08-24T08:17:19.501Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/28222.html",
+    "fetchedAt": "2026-08-24T08:17:20.108Z",
+    "tool": {
+      "slug": "floatboat",
+      "name": "Floatboat",
+      "description": "日历驱动的AI Agent桌面工具,Floatboat 的思路跟大多数 AI 助手不太一样：它不等你开口，而是盯着你的日历干活。你把 Google Calendar、Notion Calendar、飞书、Outlook、iCloud 或者任意 ICS 订阅接进来，日历上的每一个时间块就变成一个触发器——会议开始前它自动帮你准备资料，到",
+      "url": "https://floatboat.ai/",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2026/08/20260821100127-dd594.jpeg",
+      "category": "chat",
+      "tags": [
+        "AI助理"
+      ],
+      "pricing": "paid",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:20.108Z",
+      "updatedAt": "2026-08-24T08:17:20.108Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/28226.html",
+    "fetchedAt": "2026-08-24T08:17:23.791Z",
+    "tool": {
+      "slug": "meituhub",
+      "name": "MeituHub",
+      "description": "美图的企业级AI影像工作流平台,MeituHub 是美图推出的 AI 影像能力平台，把美图这些年积累的图片和视频 AI 能力做成了可以编排、可以调用的工作流。跟面向普通用户的修图 App 不同，它面向的是需要批量出图的团队——电商、品牌方和开发者。 核心用法是用自然语言编排一条可视化工作流，然后一键生成一个可复用的 Web 应用",
+      "url": "https://meituhub.cn/",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2026/08/20260821100522-b0298.jpeg",
+      "category": "image",
+      "tags": [
+        "AI图像"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:23.791Z",
+      "updatedAt": "2026-08-24T08:17:23.791Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/28225.html",
+    "fetchedAt": "2026-08-24T08:17:24.399Z",
+    "tool": {
+      "slug": "happyshrimp",
+      "name": "HappyShrimp",
+      "description": "阿里出品的AI音乐生成平台,HappyShrimp（快乐虾米）是阿里巴巴 ATH 事业群做的 AI 音乐创作平台，国内和海外双站同步开了 Beta 公测。用法很简单：用大白话描述你想要什么样的歌，它一次性把作词、作曲、编曲和人声演唱全做完，不需要你懂乐理。 它主打的技术点是「整曲一体化生成」。市面上不少 AI 音乐工具是分步来",
+      "url": "https://www.happyshrimp.cn/",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2026/08/20260821100455-32027.jpeg",
+      "category": "audio",
+      "tags": [
+        "AI"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:24.399Z",
+      "updatedAt": "2026-08-24T08:17:24.399Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/28224.html",
+    "fetchedAt": "2026-08-24T08:17:25.004Z",
+    "tool": {
+      "slug": "onsolo",
+      "name": "OnSolo",
+      "description": "腾讯出品的AI短剧创作平台,OnSolo 是腾讯推出的 AI 原生短剧创作平台，从创意或参考素材出发，帮你把剧本、角色和可直接用于成片的故事线做出来。它的特点是背后跑的是针对 IP 内容训练过的 Agent 和 Skill，也就是说它对「短剧应该怎么写」这件事有预设的理解，不是纯靠通用大模型硬编。 对创作者来说，这类工具解决的",
+      "url": "https://onsolo.ai/",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2026/08/20260821100314-325f3.jpeg",
+      "category": "image",
+      "tags": [
+        "AI"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:25.004Z",
+      "updatedAt": "2026-08-24T08:17:25.004Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/28223.html",
+    "fetchedAt": "2026-08-24T08:17:25.614Z",
+    "tool": {
+      "slug": "preview",
+      "name": "Preview",
+      "description": "AI视频分镜与制作平台,Preview 定位是 AI 视频的「制作平台」而不是又一个生成器，它把分镜、生成、导演这三件事放在同一个界面里做完。核心是一块无限画布，参考图、不同版本的镜头、场景素材都摊在上面并排放着，团队成员实时在同一个画面上协作，调整镜头顺序、对比不同版本。 工作流是这样的：先写或导入剧本，然后自动拆解成场",
+      "url": "https://preview.io/",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2026/08/20260821100219-aee3e.jpeg",
+      "category": "image",
+      "tags": [
+        "AI"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:25.614Z",
+      "updatedAt": "2026-08-24T08:17:25.614Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/27563.html",
+    "fetchedAt": "2026-08-24T08:17:26.143Z",
+    "tool": {
+      "slug": "gemini-3",
+      "name": "Gemini 3",
+      "description": "迄今最强的AI模型,全球最强Gemini 3深夜炸场，谷歌开启了AI下一个新纪元！这是迄今最强的AI模型，可能没有之一，推理最强，多模态理解最强，以及「智能体」+「氛围编程」最强。 目前可以直接通过PixPix来体验最新的Gemini 3 Pro的模型。 当然如果你懂上网，也可直接直达谷歌的入口：https://gem",
+      "url": "https://www.pixpix.com/zh-CN",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2025/03/20250313162148-8e51d.png",
+      "category": "code",
+      "tags": [
+        "AI"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:26.143Z",
+      "updatedAt": "2026-08-24T08:17:26.143Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/8917.html",
+    "fetchedAt": "2026-08-24T08:17:28.027Z",
+    "tool": {
+      "slug": "trae-英文版",
+      "name": "Trae（英文版）",
+      "description": "字节旗下，国内首款AI IDE,Trae大模型是什么？ Trae隶属于字节跳动旗下，它作为国内首款AI IDE，集成了Claude 3.5与GPT-4o两款顶尖AI，中文输入需求，秒变代码大师！无论是简单函数还是复杂应用，它都能搞定，效率翻倍！ Trae为什么这么火？Trae的7大爆火理由 1.原生中文，简单上手 打破技术壁垒",
+      "url": "https://www.trae.ai/",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2025/07/1753087358-2524044ed886e5a5a1cb52133a5a74a1.png",
+      "category": "code",
+      "tags": [
+        "AI"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:28.027Z",
+      "updatedAt": "2026-08-24T08:17:28.027Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/6039.html",
+    "fetchedAt": "2026-08-24T08:17:28.671Z",
+    "tool": {
+      "slug": "deepseek满血版",
+      "name": "DeepSeek满血版",
+      "description": "DeepSeek R1 671B满血版，免费，不卡顿,DeepSeek-R1 671B满血版，免费！不卡顿！ 真正采用DeepSeek-R1 671B满血版！这是系列模型中能力最完整、效果最优的版本。性能是一般版本的400倍！ 这个当贝AI整合DeepSeek-R1 671B满血版，免费、极速、不用登录注册，非常方便！ 包括： 1、DeepSeek-R",
+      "url": "https://ai.dangbei.com/chat",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2025/02/20250205134524-1febd.png",
+      "category": "chat",
+      "tags": [
+        "AI"
+      ],
+      "pricing": "free",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:28.671Z",
+      "updatedAt": "2026-08-24T08:17:28.671Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/715.html",
+    "fetchedAt": "2026-08-24T08:17:29.919Z",
+    "tool": {
+      "slug": "魔搭社区",
+      "name": "魔搭社区",
+      "description": "各领域先进的机器学习模型,魔搭社区（ModelScope）是由阿里达摩院推出的AI模型社区，致力于为用户提供一站式的模型服务。它聚集了大量高质量的预训练模型，涵盖计算机视觉、自然语言处理、语音识别等领域，适用于广泛的行业应用。魔搭社区不仅是一个简单的模型获取平台，更是一个开放式的机器学习社区，用户可以在这里下载、交流与完善各",
+      "url": "https://www.modelscope.cn",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2025/01/1737030581655.png",
+      "category": "audio",
+      "tags": [
+        "AI"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:29.919Z",
+      "updatedAt": "2026-08-24T08:17:29.919Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/124.html",
+    "fetchedAt": "2026-08-24T08:17:31.143Z",
+    "tool": {
+      "slug": "豆包",
+      "name": "豆包",
+      "description": "字节跳动开发的AI问答助手,豆包，一款由字节跳动精心打造的AI助手，它不仅是你的私人问答专家，更是写作、翻译、情感陪伴、编程等多面手。无论是Web端还是iOS/安卓，一键登录（手机号、抖音号、Apple ID任选），即刻开启智能生活新篇章！ 字节跳动旗下热门AI产品： 豆包主要功能清单 聊天互动：用户可以通过豆包进行对话",
+      "url": "https://dis.csqixiang.cn/unpo/dbfaxianai.html",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2025/01/1737026039.png",
+      "category": "code",
+      "tags": [
+        "AI图像"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:31.143Z",
+      "updatedAt": "2026-08-24T08:17:31.143Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/8139.html",
+    "fetchedAt": "2026-08-24T08:17:31.782Z",
+    "tool": {
+      "slug": "讯飞星火认知大模型",
+      "name": "讯飞星火认知大模型",
+      "description": "科大讯飞打造的AI多面手，对话、办公、学习样样行,简介 讯飞星火是科大讯飞推出的AI对话工具，集成了文本生成、语言理解、知识问答等多种功能。它支持74种语言和方言的无缝对话，还能提供智能批阅、数字健康管理等个性化服务。 功能特点 多语言支持：支持74种语言和方言，方便跨语言交流。 智能对话：能够理解并生成自然语言，提供流畅的对话体验。 知识问答：整",
+      "url": "https://xinghuo.xfyun.cn/",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2025/01/1740655769203.png",
+      "category": "chat",
+      "tags": [
+        "AI"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:31.782Z",
+      "updatedAt": "2026-08-24T08:17:31.782Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/197.html",
+    "fetchedAt": "2026-08-24T08:17:33.625Z",
+    "tool": {
+      "slug": "可灵ai",
+      "name": "可灵AI",
+      "description": "快手推出的视频工具,KLING AI, tools for creating imaginative images and videos, based on state-of-art generative AI methods. 可灵AI概述 可灵AI（Kling AI）是由快手团队开发的一款先进的人工智能视频生成工具",
+      "url": "https://klingai.kuaishou.com",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2025/01/1737027646115.png",
+      "category": "video",
+      "tags": [
+        "AI图像"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:33.625Z",
+      "updatedAt": "2026-08-24T08:17:33.625Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/11946.html",
+    "fetchedAt": "2026-08-24T08:17:34.233Z",
+    "tool": {
+      "slug": "vscode",
+      "name": "VSCode",
+      "description": "微软旗下跨平台源代码编辑器,Visual Studio Code（简称VS Code）是微软Microsoft推出一款运行于 Mac OS X、Windows和 Linux 之上的，针对于编写现代Web和云应用的跨平台源代码编辑器，可在桌面上运行，并且可用于Windows，macOS和Linux。 它具有对JavaScript",
+      "url": "https://code.visualstudio.com/",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2025/03/20250327110551-aed87.png",
+      "category": "code",
+      "tags": [
+        "AI"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:34.233Z",
+      "updatedAt": "2026-08-24T08:17:34.233Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/147.html",
+    "fetchedAt": "2026-08-24T08:17:35.456Z",
+    "tool": {
+      "slug": "绘蛙ai文案",
+      "name": "绘蛙AI文案",
+      "description": "种草文案写作工具,绘蛙-是一款功能强大，简洁好用的智能图片、文案创作平台，并且拥有海量虚拟模特可选择。在绘蛙，你可训练自己的商品模型和模特模型，可通过AI生成商拍图和种草文案，可以创作小红书图片,电商商品主图,跨境电商主图,小红书种草文案,穿搭文案，视频口播文案，可在线一键美图,输入口令修改图片内容,一键换装,一键去",
+      "url": "https://www.ihuiwa.com/invite?huiwaInviteCode=ZRSVGL",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2025/01/20250122090825-d9fd5.png",
+      "category": "image",
+      "tags": [
+        "AI"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:35.456Z",
+      "updatedAt": "2026-08-24T08:17:35.456Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/11551.html",
+    "fetchedAt": "2026-08-24T08:17:36.051Z",
+    "tool": {
+      "slug": "智标领航",
+      "name": "智标领航",
+      "description": "招投标AI助手,网站介绍： （一）AI写标书 AI辅助完成80%编标工作。支持AI解析招标文件、AI生成标书目录、AI生成投标方案、AI生成偏离表，简单高效。 （二）AI标讯 全网标讯实时更新，每日新增10000+招标信息，信息更新延迟≤1分钟。 （三）私有化服务 为企业提供安全可控的智能化招投标系统部署方案，安全",
+      "url": "https://www.intellibid.cn/",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2025/05/1747897844-图片3.png",
+      "category": "chat",
+      "tags": [
+        "AI办公"
+      ],
+      "pricing": "freemium",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:36.051Z",
+      "updatedAt": "2026-08-24T08:17:36.051Z"
+    }
+  },
+  {
+    "source": "faxianai",
+    "sourceUrl": "https://www.faxianai.com/ai/8154.html",
+    "fetchedAt": "2026-08-24T08:17:37.242Z",
+    "tool": {
+      "slug": "ai一键写论文",
+      "name": "AI一键写论文",
+      "description": "全能论文助手，优质AI论文平台千字大纲免费生成,笔灵AI，是一款毕业论文、千字大纲免费生成，几万字专业初稿，答辩PPT一键生成，更可根据导师要求无限改稿！ 笔灵AI论文5大特点： 1、覆盖所有专业和论文类型 2、免费千字大纲生成 3、速成万字低查重率论文 4、一键降低论文查重率 5、强力去除论文AIGC痕迹 一、笔灵AI论文功能介绍 1、覆盖所有",
+      "url": "https://ibiling.cn/paper?from=fxaipaper&ref=www.faxianai.com",
+      "logoUrl": "https://www.faxianai.com/wp-content/uploads/2025/03/1742449235-1280X1280-1.png",
+      "category": "chat",
+      "tags": [
+        "AI"
+      ],
+      "pricing": "free",
+      "rating": 0,
+      "views": 0,
+      "createdAt": "2026-08-24T08:17:37.242Z",
+      "updatedAt": "2026-08-24T08:17:37.242Z"
+    }
   }
-,  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/28167.html","fetchedAt":"2026-08-24T08:16:49.903Z","tool":{"slug":"davinci-ai","name":"DaVinci AI","description":"免费在线生成 AI 图片和 AI 视频，输入一句话即可出图出片。支持文生图、图生图、文生视频、图生视频，打开网页就能用，无需下载安装，新用户注册即送生成额度。","url":"https://www.davinci.best/","logoUrl":"https://www.faxianai.com/wp-content/uploads/2026/08/20260814164535-93059.jpeg","category":"image","tags":["AI视频"],"pricing":"free","rating":0,"views":0,"createdAt":"2026-08-24T08:16:49.903Z","updatedAt":"2026-08-24T08:16:49.903Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/28282.html","fetchedAt":"2026-08-24T08:17:02.368Z","tool":{"slug":"prized","name":"Prized","description":"AI搭建企业内部工具,Prized 让运营、客服、财务这些不写代码的团队用 AI 搭出自己的内部工具，重点在后半句：搭出来的东西是安全的。三条约束是它区别于普通“AI 生成应用”的地方。一是公司数据预先接好，管理员一次性批准每个连接器并划定它能看到的范围，之后所有工具复用这套授权。二是每一次数据访问都有审计记录。三是一键","url":"https://prized.dev/","logoUrl":"https://www.faxianai.com/wp-content/uploads/2026/08/20260822144234-dba87.jpeg","category":"code","tags":["智能体"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:02.368Z","updatedAt":"2026-08-24T08:17:02.368Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/28281.html","fetchedAt":"2026-08-24T08:17:02.982Z","tool":{"slug":"wizstar","name":"Wizstar","description":"AI数字人商品视频生成,Wizstar 是一个偏电商和营销场景的 AI 创作平台，输入可以是一段文字、一张图片，也可以直接丢一个商品链接，输出是视频、数字人口播或者商品广告片。商品链接直接转视频这条路径是它比较讨巧的设计。跑通之后，从选品到出片中间的素材整理、脚本撰写、画面生成几步被压成了一步，对需要给大量 SKU 铺视频","url":"https://wizstar.com/","logoUrl":"https://www.faxianai.com/wp-content/uploads/2026/08/20260822144234-77be0.jpeg","category":"image","tags":["AI图像"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:02.982Z","updatedAt":"2026-08-24T08:17:02.982Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/28280.html","fetchedAt":"2026-08-24T08:17:03.585Z","tool":{"slug":"meetstream-ai","name":"MeetStream AI","description":"会议机器人统一API,MeetStream 提供的是一套统一的会议机器人 API，用一个接口同时对接 Zoom、Google Meet 和 Microsoft Teams，让机器人加入会议并完成录制、实时推流和转写。它想省掉的是集成这件苦差事。三家会议平台各有各的接入规则、各有各的坑，一个做 AI 会议助手的团队往往要先","url":"https://meetstream.ai/","logoUrl":"https://www.faxianai.com/wp-content/uploads/2026/08/20260822144234-aa11a.jpeg","category":"code","tags":["AI"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:03.585Z","updatedAt":"2026-08-24T08:17:03.585Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/28279.html","fetchedAt":"2026-08-24T08:17:04.176Z","tool":{"slug":"bitdrift","name":"bitdrift","description":"AI智能体移动可观测平台,bitdrift 做的是移动端可观测性，但切入角度和传统 APM 不一样——它把数据开放给 AI 智能体，让 Agent 自己去查崩溃、性能问题和用户路径。关键词是“无采样”。传统方案为了控制成本会对日志和指标做采样，结果是排查具体问题时经常缺关键那一段。bitdrift 的说法是能覆盖 100%","url":"https://bitdrift.ai/","logoUrl":"https://www.faxianai.com/wp-content/uploads/2026/08/20260822144234-dfb94.jpeg","category":"chat","tags":["智能体"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:04.176Z","updatedAt":"2026-08-24T08:17:04.176Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/28278.html","fetchedAt":"2026-08-24T08:17:04.769Z","tool":{"slug":"nobodywho","name":"NobodyWho","description":"端侧本地大模型推理引擎,NobodyWho 是一个开源推理引擎，目标是让大模型跑在任意设备上——手机、桌面、嵌入式都算在内，文本、视觉、语音三类模型都支持。模型来源直接对接 Hugging Face，Mistral、OpenAI 开源模型、Liquid、Qwen、DeepSeek、Gemma 这些都能挑来用，格式是 ggu","url":"https://www.nobodywho.ai/","logoUrl":"https://www.faxianai.com/wp-content/uploads/2026/08/20260822144234-124e6.jpeg","category":"audio","tags":["AI"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:04.769Z","updatedAt":"2026-08-24T08:17:04.769Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/28277.html","fetchedAt":"2026-08-24T08:17:05.449Z","tool":{"slug":"hynote","name":"HyNote","description":"AI会议录音笔记工具,HyNote 是一款 AI 笔记工具，输入端铺得很宽：现场录音、电话通话、上传音频、文本与 PDF、图片截图 OCR、YouTube 或视频链接、网页，甚至 Apple Watch 都能作为采集入口。输出端则围绕“能直接用”来设计。会议方向有纪要、讨论记录、待办跟进、邮件草稿和说话人识别；学习方向有","url":"https://hynote.ai/","logoUrl":"https://www.faxianai.com/wp-content/uploads/2026/08/20260822144234-de9ca.jpeg","category":"image","tags":["AI"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:05.449Z","updatedAt":"2026-08-24T08:17:05.449Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/28276.html","fetchedAt":"2026-08-24T08:17:06.032Z","tool":{"slug":"checksum-ai","name":"Checksum AI","description":"AI自动生成端到端测试,Checksum 把自己定位成“编程智能体的测试搭子”，做的事是自动生成并维护 Playwright 端到端测试。它的判断很直接：AI 写代码的速度上来之后，测试覆盖率跟不上就成了新瓶颈。所以它给了三个协作的智能体——End-to-end Agent 生成可用的 Playwright 测试，应用改动","url":"https://checksum.ai/","logoUrl":"https://www.faxianai.com/wp-content/uploads/2026/08/20260822144234-259fb.jpeg","category":"code","tags":["AI"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:06.032Z","updatedAt":"2026-08-24T08:17:06.032Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/28275.html","fetchedAt":"2026-08-24T08:17:06.657Z","tool":{"slug":"actx0","name":"Actx0","description":"AI智能体记忆基础设施,Actx0 是给 AI 智能体和应用做记忆层的托管服务，解决的是“每开一个新会话就失忆”这个老问题。它把记忆分成两类：会话记忆（session memories）保存单次交互过程中攒下来的上下文，工作区知识（workspace knowledge）保存跨会话长期有效的信息。检索延迟做到毫秒级，官方明","url":"https://actx0.com/","logoUrl":"https://www.faxianai.com/wp-content/uploads/2026/08/20260822144234-b0683.jpeg","category":"chat","tags":["智能体"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:06.657Z","updatedAt":"2026-08-24T08:17:06.657Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/28274.html","fetchedAt":"2026-08-24T08:17:07.251Z","tool":{"slug":"loomi","name":"Loomi","description":"社媒AI图文视频创作平台,Loomi 对外的定位是社交媒体内容智能体，实际打开产品会发现它做的比这句话宽——Explore、Agent、AI Image、AI Video、LoomiTV、AI Chat 几个模块并列，是一个把多家模型聚到一起的创作平台。模型这一层铺得比较全，视频侧接了 Seedance 2 和 Seedan","url":"https://loomi.live/","logoUrl":"https://www.faxianai.com/wp-content/uploads/2026/08/20260822144234-531fb.jpeg","category":"video","tags":["AI助理","AI图像","智能体"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:07.251Z","updatedAt":"2026-08-24T08:17:07.251Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/28273.html","fetchedAt":"2026-08-24T08:17:07.848Z","tool":{"slug":"lawbot脱敏猫","name":"Lawbot脱敏猫","description":"法律文档离线脱敏工具,Lawbot 脱敏猫解决的是一个很具体的矛盾：律师想用 AI 处理合同、诉状、判决书，但这些材料里的当事人信息不能上传。它的做法是把脱敏这一步前置到本机。纯离线桌面软件，Windows 和 macOS 都有，识别模型和 OCR 模型随安装包一次性下载到本地，处理过程不调用任何外部 API，也不上传文","url":"https://www.lawbotai.cn/","logoUrl":"https://www.faxianai.com/wp-content/uploads/2026/08/20260822144234-acd06.jpeg","category":"code","tags":["AI"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:07.848Z","updatedAt":"2026-08-24T08:17:07.848Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/28272.html","fetchedAt":"2026-08-24T08:17:08.461Z","tool":{"slug":"cline","name":"Cline","description":"开源AI编程智能体,Cline 是一个开源的 AI 编程智能体，Apache 2.0 协议，全平台安装量超过 800 万，GitHub 星标 6.6 万以上。它不绑定任何模型厂商，你想接哪家就接哪家。形态给了三种：IDE 扩展、CLI 和 SDK。官方目前主推 CLI，一条 npm i -g cline 装完就能在终端","url":"https://cline.bot/","logoUrl":"https://www.faxianai.com/wp-content/uploads/2026/08/20260822144234-c7d72.jpeg","category":"code","tags":["智能体"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:08.461Z","updatedAt":"2026-08-24T08:17:08.461Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/28271.html","fetchedAt":"2026-08-24T08:17:09.048Z","tool":{"slug":"renoise","name":"Renoise","description":"多模型AI视频图像套件,Renoise 把市面上主流的生成模型集中到了一个界面里，视频侧有 Seedance 2.5 / 2.0、可灵 3.0、MiniMax H3、Omni、Grok Video，图像侧有 Midjourney V7、GPT Image 2、Nano Banana Pro、Grok Image。同一个工作","url":"https://renoise.ai/","logoUrl":"https://www.faxianai.com/wp-content/uploads/2026/08/20260822144234-2d694.jpeg","category":"image","tags":["AI图像"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:09.048Z","updatedAt":"2026-08-24T08:17:09.048Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/28270.html","fetchedAt":"2026-08-24T08:17:10.125Z","tool":{"slug":"qwenpaw","name":"QwenPaw","description":"个人AI智能体工作站,QwenPaw 是 AgentScope 团队做的个人 AI 智能体工作站，特点是跑在你自己的环境里——本地部署或者自己的云都可以，不必把数据交给第三方托管。它最实用的地方在渠道接入。钉钉、飞书、QQ、Discord、Telegram 等十多个渠道都能连，也就是说你可以在日常已经在用的聊天软件里直接","url":"https://qwenpaw.agentscope.io/","logoUrl":"https://www.faxianai.com/wp-content/uploads/2026/08/20260822144234-943fd.jpeg","category":"chat","tags":["AI助理"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:10.125Z","updatedAt":"2026-08-24T08:17:10.125Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/28269.html","fetchedAt":"2026-08-24T08:17:10.776Z","tool":{"slug":"laper-ai","name":"Laper AI","description":"免费AI编剧剧本工具,Laper 是一款面向影视编剧的 AI 写作工具，定位很克制——它自己的宣传语是“没有 AI 味的 AI 编剧软件”，意思是只在编剧真正需要帮忙的环节介入，不替你写整个故事。核心功能有三块。一是剧本格式自动维护，行业标准的场景标题、动作、角色、对白、转场这些排版规则由工具兜住，编剧不用再手动调格式","url":"https://laper.ai/","logoUrl":"https://www.faxianai.com/wp-content/uploads/2026/08/20260822144234-56094.jpeg","category":"video","tags":["AI"],"pricing":"free","rating":0,"views":0,"createdAt":"2026-08-24T08:17:10.776Z","updatedAt":"2026-08-24T08:17:10.776Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/28231.html","fetchedAt":"2026-08-24T08:17:11.455Z","tool":{"slug":"tipkay","name":"TipKay","description":"面向小团队的按需AI员工平台,TipKay 是一个面向经营者和小团队的 AI 员工平台，思路是「按岗位找人」而不是按功能找工具。平台上列着小红书运营、抖音运营、公众号编辑、知乎博主、闲鱼运营、视频制作这些岗位，每个 AI 员工都预先配好了对应的岗位经验、工作流程和所需工具，打开就能上岗。 它跟普通 AI 助手的区别在于交付粒度","url":"https://www.tipkay.com/","logoUrl":"https://www.faxianai.com/wp-content/uploads/2026/08/20260821101049-7373f.jpeg","category":"video","tags":["AI助理","智能体"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:11.455Z","updatedAt":"2026-08-24T08:17:11.455Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/28230.html","fetchedAt":"2026-08-24T08:17:12.181Z","tool":{"slug":"atoms","name":"Atoms","description":"AI建站与应用生成工具,Atoms 定位是「你团队的网站和应用创造者」，用一组 AI 员工帮你验证想法、做出产品、再去获取用户，整个过程不用写代码。它把自己包装成一支完整的 AI 团队而不是单个工具——你负责做决定，Agent 负责执行。 上手可以从模板开始，官方给的分类有 SaaS 应用、电商、内部工具和个人项目，站上能","url":"https://atoms.dev/","logoUrl":"https://www.faxianai.com/wp-content/uploads/2026/08/20260821100910-9cdd9.jpeg","category":"image","tags":["AI助理","智能体"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:12.181Z","updatedAt":"2026-08-24T08:17:12.181Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/28229.html","fetchedAt":"2026-08-24T08:17:12.784Z","tool":{"slug":"loomy","name":"Loomy","description":"讯飞出品的桌面AI智能助理,Loomy 是科大讯飞推出的桌面级 AI 智能助理，装上就能用，不需要配置。官方给的适用场景包括自媒体运营、远程办公、日程管理、文件整理和电商运营，属于那种「什么杂活都能接一点」的通用型助手。 比较值得说的一点是它兼容 Openclaw 技能体系。这意味着社区已经写好的那些技能包可以直接拿来用，不用","url":"https://loomy.xunfei.cn/","logoUrl":"https://www.faxianai.com/wp-content/uploads/2026/08/20260821100845-60659.jpeg","category":"image","tags":["AI助理","智能体"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:12.784Z","updatedAt":"2026-08-24T08:17:12.784Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/28228.html","fetchedAt":"2026-08-24T08:17:13.390Z","tool":{"slug":"catpaw","name":"CatPaw","description":"美团的全场景AI Agent平台,CatPaw 是美团推出的 AI Agent 平台，一个产品覆盖两类用户：普通用户能拿到一个开箱即用的 AI 智能工作台，企业则能用它来开发和托管自己的 Agent。 对个人来说，它就是一个能接手具体任务的智能工作台，不用配置就能开始用。对企业来说，价值在后半段——构建「AI 数字员工」，把原本靠人","url":"https://catpaw.meituan.com/","logoUrl":"https://www.faxianai.com/wp-content/uploads/2026/08/20260821100714-7d7e9.jpeg","category":"code","tags":["AI助理","智能体"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:13.390Z","updatedAt":"2026-08-24T08:17:13.390Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/28227.html","fetchedAt":"2026-08-24T08:17:19.501Z","tool":{"slug":"百度搭子","name":"百度搭子","description":"百度出品的桌面端AI办公助手,百度搭子（DuMate）是百度智能云做的桌面端 AI 助手，主打「真干活」——你说需求，它跨应用、跨文件地把事执行完，而不是只给你一段回答。提供 macOS（M 系列芯片）和 Windows（win10 及以上）客户端，也有手机 App。 从官方给的场景看，重点押在办公自动化上：文件夹智能分类归档","url":"https://www.dumate.cn/","logoUrl":"https://www.faxianai.com/wp-content/uploads/2026/08/20260821192534-1acd0.jpeg","category":"chat","tags":["AI助理"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:19.501Z","updatedAt":"2026-08-24T08:17:19.501Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/28222.html","fetchedAt":"2026-08-24T08:17:20.108Z","tool":{"slug":"floatboat","name":"Floatboat","description":"日历驱动的AI Agent桌面工具,Floatboat 的思路跟大多数 AI 助手不太一样：它不等你开口，而是盯着你的日历干活。你把 Google Calendar、Notion Calendar、飞书、Outlook、iCloud 或者任意 ICS 订阅接进来，日历上的每一个时间块就变成一个触发器——会议开始前它自动帮你准备资料，到","url":"https://floatboat.ai/","logoUrl":"https://www.faxianai.com/wp-content/uploads/2026/08/20260821100127-dd594.jpeg","category":"chat","tags":["AI助理"],"pricing":"paid","rating":0,"views":0,"createdAt":"2026-08-24T08:17:20.108Z","updatedAt":"2026-08-24T08:17:20.108Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/28226.html","fetchedAt":"2026-08-24T08:17:23.791Z","tool":{"slug":"meituhub","name":"MeituHub","description":"美图的企业级AI影像工作流平台,MeituHub 是美图推出的 AI 影像能力平台，把美图这些年积累的图片和视频 AI 能力做成了可以编排、可以调用的工作流。跟面向普通用户的修图 App 不同，它面向的是需要批量出图的团队——电商、品牌方和开发者。 核心用法是用自然语言编排一条可视化工作流，然后一键生成一个可复用的 Web 应用","url":"https://meituhub.cn/","logoUrl":"https://www.faxianai.com/wp-content/uploads/2026/08/20260821100522-b0298.jpeg","category":"image","tags":["AI图像"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:23.791Z","updatedAt":"2026-08-24T08:17:23.791Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/28225.html","fetchedAt":"2026-08-24T08:17:24.399Z","tool":{"slug":"happyshrimp","name":"HappyShrimp","description":"阿里出品的AI音乐生成平台,HappyShrimp（快乐虾米）是阿里巴巴 ATH 事业群做的 AI 音乐创作平台，国内和海外双站同步开了 Beta 公测。用法很简单：用大白话描述你想要什么样的歌，它一次性把作词、作曲、编曲和人声演唱全做完，不需要你懂乐理。 它主打的技术点是「整曲一体化生成」。市面上不少 AI 音乐工具是分步来","url":"https://www.happyshrimp.cn/","logoUrl":"https://www.faxianai.com/wp-content/uploads/2026/08/20260821100455-32027.jpeg","category":"audio","tags":["AI"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:24.399Z","updatedAt":"2026-08-24T08:17:24.399Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/28224.html","fetchedAt":"2026-08-24T08:17:25.004Z","tool":{"slug":"onsolo","name":"OnSolo","description":"腾讯出品的AI短剧创作平台,OnSolo 是腾讯推出的 AI 原生短剧创作平台，从创意或参考素材出发，帮你把剧本、角色和可直接用于成片的故事线做出来。它的特点是背后跑的是针对 IP 内容训练过的 Agent 和 Skill，也就是说它对「短剧应该怎么写」这件事有预设的理解，不是纯靠通用大模型硬编。 对创作者来说，这类工具解决的","url":"https://onsolo.ai/","logoUrl":"https://www.faxianai.com/wp-content/uploads/2026/08/20260821100314-325f3.jpeg","category":"image","tags":["AI"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:25.004Z","updatedAt":"2026-08-24T08:17:25.004Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/28223.html","fetchedAt":"2026-08-24T08:17:25.614Z","tool":{"slug":"preview","name":"Preview","description":"AI视频分镜与制作平台,Preview 定位是 AI 视频的「制作平台」而不是又一个生成器，它把分镜、生成、导演这三件事放在同一个界面里做完。核心是一块无限画布，参考图、不同版本的镜头、场景素材都摊在上面并排放着，团队成员实时在同一个画面上协作，调整镜头顺序、对比不同版本。 工作流是这样的：先写或导入剧本，然后自动拆解成场","url":"https://preview.io/","logoUrl":"https://www.faxianai.com/wp-content/uploads/2026/08/20260821100219-aee3e.jpeg","category":"image","tags":["AI"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:25.614Z","updatedAt":"2026-08-24T08:17:25.614Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/27563.html","fetchedAt":"2026-08-24T08:17:26.143Z","tool":{"slug":"gemini-3","name":"Gemini 3","description":"迄今最强的AI模型,全球最强Gemini 3深夜炸场，谷歌开启了AI下一个新纪元！这是迄今最强的AI模型，可能没有之一，推理最强，多模态理解最强，以及「智能体」+「氛围编程」最强。 目前可以直接通过PixPix来体验最新的Gemini 3 Pro的模型。 当然如果你懂上网，也可直接直达谷歌的入口：https://gem","url":"https://www.pixpix.com/zh-CN","logoUrl":"https://www.faxianai.com/wp-content/uploads/2025/03/20250313162148-8e51d.png","category":"code","tags":["AI"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:26.143Z","updatedAt":"2026-08-24T08:17:26.143Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/8917.html","fetchedAt":"2026-08-24T08:17:28.027Z","tool":{"slug":"trae-英文版","name":"Trae（英文版）","description":"字节旗下，国内首款AI IDE,Trae大模型是什么？ Trae隶属于字节跳动旗下，它作为国内首款AI IDE，集成了Claude 3.5与GPT-4o两款顶尖AI，中文输入需求，秒变代码大师！无论是简单函数还是复杂应用，它都能搞定，效率翻倍！ Trae为什么这么火？Trae的7大爆火理由 1.原生中文，简单上手 打破技术壁垒","url":"https://www.trae.ai/","logoUrl":"https://www.faxianai.com/wp-content/uploads/2025/07/1753087358-2524044ed886e5a5a1cb52133a5a74a1.png","category":"code","tags":["AI"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:28.027Z","updatedAt":"2026-08-24T08:17:28.027Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/6039.html","fetchedAt":"2026-08-24T08:17:28.671Z","tool":{"slug":"deepseek满血版","name":"DeepSeek满血版","description":"DeepSeek R1 671B满血版，免费，不卡顿,DeepSeek-R1 671B满血版，免费！不卡顿！ 真正采用DeepSeek-R1 671B满血版！这是系列模型中能力最完整、效果最优的版本。性能是一般版本的400倍！ 这个当贝AI整合DeepSeek-R1 671B满血版，免费、极速、不用登录注册，非常方便！ 包括： 1、DeepSeek-R","url":"https://ai.dangbei.com/chat","logoUrl":"https://www.faxianai.com/wp-content/uploads/2025/02/20250205134524-1febd.png","category":"chat","tags":["AI"],"pricing":"free","rating":0,"views":0,"createdAt":"2026-08-24T08:17:28.671Z","updatedAt":"2026-08-24T08:17:28.671Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/715.html","fetchedAt":"2026-08-24T08:17:29.919Z","tool":{"slug":"魔搭社区","name":"魔搭社区","description":"各领域先进的机器学习模型,魔搭社区（ModelScope）是由阿里达摩院推出的AI模型社区，致力于为用户提供一站式的模型服务。它聚集了大量高质量的预训练模型，涵盖计算机视觉、自然语言处理、语音识别等领域，适用于广泛的行业应用。魔搭社区不仅是一个简单的模型获取平台，更是一个开放式的机器学习社区，用户可以在这里下载、交流与完善各","url":"https://www.modelscope.cn","logoUrl":"https://www.faxianai.com/wp-content/uploads/2025/01/1737030581655.png","category":"audio","tags":["AI"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:29.919Z","updatedAt":"2026-08-24T08:17:29.919Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/124.html","fetchedAt":"2026-08-24T08:17:31.143Z","tool":{"slug":"豆包","name":"豆包","description":"字节跳动开发的AI问答助手,豆包，一款由字节跳动精心打造的AI助手，它不仅是你的私人问答专家，更是写作、翻译、情感陪伴、编程等多面手。无论是Web端还是iOS/安卓，一键登录（手机号、抖音号、Apple ID任选），即刻开启智能生活新篇章！ 字节跳动旗下热门AI产品： 豆包主要功能清单 聊天互动：用户可以通过豆包进行对话","url":"https://dis.csqixiang.cn/unpo/dbfaxianai.html","logoUrl":"https://www.faxianai.com/wp-content/uploads/2025/01/1737026039.png","category":"code","tags":["AI图像"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:31.143Z","updatedAt":"2026-08-24T08:17:31.143Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/8139.html","fetchedAt":"2026-08-24T08:17:31.782Z","tool":{"slug":"讯飞星火认知大模型","name":"讯飞星火认知大模型","description":"科大讯飞打造的AI多面手，对话、办公、学习样样行,简介 讯飞星火是科大讯飞推出的AI对话工具，集成了文本生成、语言理解、知识问答等多种功能。它支持74种语言和方言的无缝对话，还能提供智能批阅、数字健康管理等个性化服务。 功能特点 多语言支持：支持74种语言和方言，方便跨语言交流。 智能对话：能够理解并生成自然语言，提供流畅的对话体验。 知识问答：整","url":"https://xinghuo.xfyun.cn/","logoUrl":"https://www.faxianai.com/wp-content/uploads/2025/01/1740655769203.png","category":"chat","tags":["AI"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:31.782Z","updatedAt":"2026-08-24T08:17:31.782Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/197.html","fetchedAt":"2026-08-24T08:17:33.625Z","tool":{"slug":"可灵ai","name":"可灵AI","description":"快手推出的视频工具,KLING AI, tools for creating imaginative images and videos, based on state-of-art generative AI methods. 可灵AI概述 可灵AI（Kling AI）是由快手团队开发的一款先进的人工智能视频生成工具","url":"https://klingai.kuaishou.com","logoUrl":"https://www.faxianai.com/wp-content/uploads/2025/01/1737027646115.png","category":"video","tags":["AI图像"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:33.625Z","updatedAt":"2026-08-24T08:17:33.625Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/11946.html","fetchedAt":"2026-08-24T08:17:34.233Z","tool":{"slug":"vscode","name":"VSCode","description":"微软旗下跨平台源代码编辑器,Visual Studio Code（简称VS Code）是微软Microsoft推出一款运行于 Mac OS X、Windows和 Linux 之上的，针对于编写现代Web和云应用的跨平台源代码编辑器，可在桌面上运行，并且可用于Windows，macOS和Linux。 它具有对JavaScript","url":"https://code.visualstudio.com/","logoUrl":"https://www.faxianai.com/wp-content/uploads/2025/03/20250327110551-aed87.png","category":"code","tags":["AI"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:34.233Z","updatedAt":"2026-08-24T08:17:34.233Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/147.html","fetchedAt":"2026-08-24T08:17:35.456Z","tool":{"slug":"绘蛙ai文案","name":"绘蛙AI文案","description":"种草文案写作工具,绘蛙-是一款功能强大，简洁好用的智能图片、文案创作平台，并且拥有海量虚拟模特可选择。在绘蛙，你可训练自己的商品模型和模特模型，可通过AI生成商拍图和种草文案，可以创作小红书图片,电商商品主图,跨境电商主图,小红书种草文案,穿搭文案，视频口播文案，可在线一键美图,输入口令修改图片内容,一键换装,一键去","url":"https://www.ihuiwa.com/invite?huiwaInviteCode=ZRSVGL","logoUrl":"https://www.faxianai.com/wp-content/uploads/2025/01/20250122090825-d9fd5.png","category":"image","tags":["AI"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:35.456Z","updatedAt":"2026-08-24T08:17:35.456Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/11551.html","fetchedAt":"2026-08-24T08:17:36.051Z","tool":{"slug":"智标领航","name":"智标领航","description":"招投标AI助手,网站介绍： （一）AI写标书 AI辅助完成80%编标工作。支持AI解析招标文件、AI生成标书目录、AI生成投标方案、AI生成偏离表，简单高效。 （二）AI标讯 全网标讯实时更新，每日新增10000+招标信息，信息更新延迟≤1分钟。 （三）私有化服务 为企业提供安全可控的智能化招投标系统部署方案，安全","url":"https://www.intellibid.cn/","logoUrl":"https://www.faxianai.com/wp-content/uploads/2025/05/1747897844-图片3.png","category":"chat","tags":["AI办公"],"pricing":"freemium","rating":0,"views":0,"createdAt":"2026-08-24T08:17:36.051Z","updatedAt":"2026-08-24T08:17:36.051Z"}},
-  {"source":"faxianai","sourceUrl":"https://www.faxianai.com/ai/8154.html","fetchedAt":"2026-08-24T08:17:37.242Z","tool":{"slug":"ai一键写论文","name":"AI一键写论文","description":"全能论文助手，优质AI论文平台千字大纲免费生成,笔灵AI，是一款毕业论文、千字大纲免费生成，几万字专业初稿，答辩PPT一键生成，更可根据导师要求无限改稿！ 笔灵AI论文5大特点： 1、覆盖所有专业和论文类型 2、免费千字大纲生成 3、速成万字低查重率论文 4、一键降低论文查重率 5、强力去除论文AIGC痕迹 一、笔灵AI论文功能介绍 1、覆盖所有","url":"https://ibiling.cn/paper?from=fxaipaper&ref=www.faxianai.com","logoUrl":"https://www.faxianai.com/wp-content/uploads/2025/03/1742449235-1280X1280-1.png","category":"chat","tags":["AI"],"pricing":"free","rating":0,"views":0,"createdAt":"2026-08-24T08:17:37.242Z","updatedAt":"2026-08-24T08:17:37.242Z"}}
 ]
+
+export function getToolDrafts(): ToolDraft[] {
+  return toolDrafts
+}

@@ -1,6 +1,6 @@
 // 模型 token 单价数据（人民币元/M tokens）
 // 数据源: LiteLLM (https://github.com/BerriAI/litellm) + OpenRouter (https://openrouter.ai/api/v1/models)
-// 同步时间: 2026-07-06
+// 同步时间: 2026-08-30
 // USD→CNY 汇率: 7.2
 // 用于 ModelCard 显示"输入/输出 token 单价"
 

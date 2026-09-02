@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useState, useMemo } from 'react'
-import { ArrowLeft, Database, Plus, Edit2, Trash2, Save, X, FileText, Wrench, TrendingUp, Search, ClipboardCheck, Check, XCircle, Clock } from 'lucide-react'
+import { ArrowLeft, Database, Plus, Edit2, Trash2, Save, X, FileText, Wrench, TrendingUp, Search, ClipboardCheck, Check, XCircle, Clock, Settings, Key, Link as LinkIcon, Bot, Eye, EyeOff } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -124,10 +124,13 @@ export default function AdminPage() {
   const [articles, setArticles] = useState<Article[]>([])
   const [submittedTools, setSubmittedTools] = useState<SubmittedTool[]>([])
   const [loading, setLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState<'overview' | 'tools' | 'articles' | 'submissions'>('overview')
+  const [activeTab, setActiveTab] = useState<'overview' | 'tools' | 'articles' | 'submissions' | 'settings'>('overview')
   const [editingTool, setEditingTool] = useState<Partial<Tool> | null>(null)
   const [editingArticle, setEditingArticle] = useState<Partial<Article> | null>(null)
   const [toolSearch, setToolSearch] = useState('')
+  const [llmConfig, setLlmConfig] = useState({ apiUrl: '', apiKey: '', model: 'gpt-4o-mini', hasKey: false, apiKeyMasked: '' })
+  const [showApiKey, setShowApiKey] = useState(false)
+  const [savingSettings, setSavingSettings] = useState(false)
 
   const loadData = () => {
     setLoading(true)
@@ -135,19 +138,47 @@ export default function AdminPage() {
       fetch('/api/tools?limit=100').then(r => r.json()),
       fetch('/api/articles?limit=50').then(r => r.json()),
       fetch('/data/submitted-tools.json').then(r => r.json()).catch(() => {
-        // 尝试从 localStorage 读取
         const stored = localStorage.getItem('xiaoma-submitted-tools')
         return stored ? JSON.parse(stored) : []
       }),
-    ]).then(([toolsRes, articlesRes, subRes]) => {
+      fetch('/api/admin/settings').then(r => r.json()).catch(() => ({ apiUrl: '', hasKey: false })),
+    ]).then(([toolsRes, articlesRes, subRes, settingsRes]) => {
       setTools(toolsRes.data || [])
       setArticles(articlesRes.data || [])
       setSubmittedTools(Array.isArray(subRes) ? subRes : [])
+      setLlmConfig(prev => ({ ...prev, ...settingsRes, apiKey: settingsRes.hasKey ? '' : '' }))
       setLoading(false)
     }).catch(err => {
       console.error('[Admin] fetch failed:', err)
       setLoading(false)
     })
+  }
+
+  const handleSaveSettings = async () => {
+    setSavingSettings(true)
+    try {
+      const res = await fetch('/api/admin/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          apiUrl: llmConfig.apiUrl,
+          apiKey: llmConfig.apiKey, // 空字符串时后端保留旧 key
+          model: llmConfig.model,
+        }),
+      })
+      const data = await res.json()
+      if (data.ok) {
+        alert('✅ LLM 配置已保存')
+        // 重新加载配置
+        const settingsRes = await fetch('/api/admin/settings').then(r => r.json())
+        setLlmConfig(prev => ({ ...prev, ...settingsRes, apiKey: '' }))
+      } else {
+        alert('❌ 保存失败: ' + (data.error || '未知错误'))
+      }
+    } catch (e) {
+      alert('❌ 保存失败: ' + e)
+    }
+    setSavingSettings(false)
   }
 
   useEffect(() => {
@@ -269,6 +300,7 @@ export default function AdminPage() {
     { key: 'tools' as const, label: `工具 (${tools.length})`, icon: Wrench },
     { key: 'articles' as const, label: `文章 (${articles.length})`, icon: FileText },
     { key: 'submissions' as const, label: `提交审核 (${pendingSubmissions.length})`, icon: ClipboardCheck },
+    { key: 'settings' as const, label: '设置', icon: Settings },
   ]
 
   return (
@@ -604,7 +636,7 @@ export default function AdminPage() {
               ))}
             </div>
           </div>
-        ) : (
+        ) : activeTab === 'submissions' ? (
           /* 提交审核 */
           <div>
             <div className="mb-4 flex items-center justify-between">
@@ -694,6 +726,113 @@ export default function AdminPage() {
                 ))}
               </div>
             )}
+          </div>
+        ) : (
+          /* 设置 - LLM API 配置 */
+          <div className="max-w-2xl space-y-6">
+            <Card className="border-border p-6">
+              <div className="mb-4 flex items-center gap-2">
+                <Bot className="h-5 w-5 text-brand-purple" />
+                <h3 className="text-lg font-bold">大模型 API 配置</h3>
+              </div>
+              <p className="mb-4 text-sm text-muted-foreground">
+                配置用于自动翻译和自动生成工具简介的大模型 API。支持 OpenAI 兼容接口（OpenAI / Claude / DeepSeek / 通义千问等）。
+              </p>
+
+              {/* API URL */}
+              <div className="mb-4">
+                <label className="mb-1 flex items-center gap-1 text-sm text-muted-foreground">
+                  <LinkIcon className="h-3 w-3" /> API 地址
+                </label>
+                <Input
+                  value={llmConfig.apiUrl}
+                  onChange={e => setLlmConfig({ ...llmConfig, apiUrl: e.target.value })}
+                  placeholder="https://api.openai.com/v1/chat/completions"
+                  className="border-border bg-card font-mono text-sm"
+                />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  OpenAI: https://api.openai.com/v1/chat/completions · DeepSeek: https://api.deepseek.com/v1/chat/completions
+                </p>
+              </div>
+
+              {/* API Key */}
+              <div className="mb-4">
+                <label className="mb-1 flex items-center gap-1 text-sm text-muted-foreground">
+                  <Key className="h-3 w-3" /> API Key
+                </label>
+                <div className="relative">
+                  <Input
+                    type={showApiKey ? 'text' : 'password'}
+                    value={llmConfig.apiKey}
+                    onChange={e => setLlmConfig({ ...llmConfig, apiKey: e.target.value })}
+                    placeholder={llmConfig.hasKey ? `已配置 (${llmConfig.apiKeyMasked || '••••••••'})，留空保留原配置` : 'sk-...'}
+                    className="border-border bg-card font-mono text-sm pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowApiKey(!showApiKey)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    {showApiKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+                {llmConfig.hasKey && (
+                  <p className="mt-1 text-xs text-emerald-600">✓ 已配置 API Key{llmConfig.apiKeyMasked ? ` (${llmConfig.apiKeyMasked})` : ''}</p>
+                )}
+              </div>
+
+              {/* Model */}
+              <div className="mb-6">
+                <label className="mb-1 flex items-center gap-1 text-sm text-muted-foreground">
+                  <Bot className="h-3 w-3" /> 模型名称
+                </label>
+                <Input
+                  value={llmConfig.model}
+                  onChange={e => setLlmConfig({ ...llmConfig, model: e.target.value })}
+                  placeholder="gpt-4o-mini"
+                  className="border-border bg-card font-mono text-sm"
+                />
+                <p className="mt-1 text-xs text-muted-foreground">
+                  推荐: gpt-4o-mini(便宜) / deepseek-chat / claude-3-5-sonnet / qwen-plus
+                </p>
+              </div>
+
+              <div className="flex justify-end">
+                <Button
+                  onClick={handleSaveSettings}
+                  disabled={savingSettings}
+                  className="gradient-brand text-white hover:brightness-110"
+                >
+                  <Save className="mr-1 h-4 w-4" />
+                  {savingSettings ? '保存中...' : '保存配置'}
+                </Button>
+              </div>
+            </Card>
+
+            <Card className="border-border p-6">
+              <h3 className="mb-3 text-lg font-bold">自动化更新工具链</h3>
+              <div className="space-y-3 text-sm">
+                <div className="rounded-lg border border-border bg-muted/30 p-3">
+                  <p className="font-semibold">一键更新</p>
+                  <code className="mt-1 block text-xs text-muted-foreground">node scripts/run-full-update.mjs --limit=20</code>
+                </div>
+                <div className="rounded-lg border border-border bg-muted/30 p-3">
+                  <p className="font-semibold">仅审计（不抓取）</p>
+                  <code className="mt-1 block text-xs text-muted-foreground">node scripts/run-full-update.mjs --skip-import</code>
+                </div>
+                <div className="rounded-lg border border-border bg-muted/30 p-3">
+                  <p className="font-semibold">清理无价值草稿</p>
+                  <code className="mt-1 block text-xs text-muted-foreground">node scripts/clean-draft.mjs --source=producthunt</code>
+                </div>
+                <div className="rounded-lg border border-border bg-muted/30 p-3">
+                  <p className="font-semibold">草稿质量审计</p>
+                  <code className="mt-1 block text-xs text-muted-foreground">node scripts/audit-tools.mjs --draft</code>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  配置好 API 后，自动翻译功能将读取 data/llm-config.json 调用大模型翻译英文草稿简介。
+                </p>
+              </div>
+            </Card>
           </div>
         )}
       </div>

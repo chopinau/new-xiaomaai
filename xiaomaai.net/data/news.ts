@@ -3,6 +3,8 @@ export interface NewsItem {
   date: string // YYYY-MM-DD
   title: string
   summary: string
+  content: string // 全文 HTML（1:1 原文）
+  coverImage?: string // 封面图 URL
   category: 'llm' | 'opensource' | 'business' | 'funding'
   source: string
   url: string
@@ -16,142 +18,24 @@ export const NEWS_CATEGORIES = [
   { key: 'funding', label: '融资' },
 ] as const
 
+// 空数组：所有资讯必须从 news-draft.ts 审核发布
 export const newsItems: NewsItem[] = [
   {
-    id: '1',
-    date: '2026-07-21',
-    title: 'OpenAI 正式发布 GPT-5.5，上下文窗口扩展至 256K',
-    summary: 'GPT-5.5 在推理、数学和代码能力上全面超越 GPT-5，推理速度提升 2.5 倍，输入价格 ¥36/M tokens，输出 ¥216/M tokens，支持 256K 上下文窗口和原生多模态。',
-    category: 'llm',
-    source: 'OpenAI Blog',
-    url: 'https://openai.com/blog',
+    id: "f1l916",
+    date: "2026-05-01",
+    title: "Anthropic向华尔街推出10个AI金融Agent",
+    summary: "Anthropic昨天放了一招直奔金融业的牌。 10个开箱即用的Claude agent模板，配套Microsoft 365深度集成，目标客户名单里写着Citadel、纽约梅隆、Carlyle、瑞穗——这不是PR稿里的”潜在意向客户”，是已",
+    content: "<p>Anthropic昨天放了一招直奔金融业的牌。</p>\n<p>10个开箱即用的Claude agent模板，配套Microsoft 365深度集成，目标客户名单里写着Citadel、纽约梅隆、Carlyle、瑞穗——这不是PR稿里的”潜在意向客户”，是已经在生产环境里用的。</p>\n<p>说白了，Anthropic想让分析师从写PPT和过KYC里脱身。</p>\n<h2 id=\"10个模板都是干什么的\">10个模板都是干什么的</h2>\n<p>按场景分两组。</p>\n<p><strong>面向研究和客户覆盖：</strong></p>\n<ul>\n<li>Pitch builder（路演材料生成）</li>\n<li>Meeting preparer（会前准备）</li>\n<li>Earnings reviewer（财报分析）</li>\n<li>Model builder（财务建模）</li>\n<li>Market researcher（市场研究）</li>\n</ul>\n<p><strong>面向财务和运营：</strong></p>\n<ul>\n<li>Valuation reviewer（估值审查）</li>\n<li>General ledger reconciler（总账对账）</li>\n<li>Month-end closer（月末结账）</li>\n<li>Statement auditor（报表审计）</li>\n<li>KYC screener（KYC筛查）</li>\n</ul>\n<p>每个模板都是一个”参考架构”，里面打包了三样东西：</p>\n<blockquote>\n<p>Skills（任务指令和领域知识）+ Connectors（受治理的数据访问）+ Subagents（处理特定子任务的Claude小弟）</p>\n</blockquote>\n<p>部署方式三选一：作为Claude Cowork和Claude Code的插件、作为Claude Managed Agents的cookbook、或者直接调用。Managed Agents这条路比较关键——支持长时间会话、按工具粒度的权限控制、托管的凭证保险柜、完整审计日志。</p>\n<h2 id=\"已经在用的客户名单\">已经在用的客户名单</h2>\n<p>这是Anthropic这次最有杀伤力的部分——客户引语全是真名实姓的高管：</p>\n<ul>\n<li><strong>Citadel核心工程负责人 Atte Lahtiranta</strong>：“Claude for Excel让分析师在他们最熟悉的工具里建模型、做信号分离、压力测试。”</li>\n<li><strong>FIS CEO Stephanie Ferris</strong>：“反洗钱调查从几天压缩到几分钟。”</li>\n<li><strong>纽约梅隆 CIO Leigh-Ann Russell</strong>：“数字员工现在能端到端处理整个case。”</li>\n<li><strong>Walleye Capital CEO Will England</strong>：“400人团队100%在用Claude Code。”</li>\n<li><strong>Carlyle 首席数字官 Matt Anderson</strong>：“Claude在投资、运营、组合管理全链条上创造价值。”</li>\n</ul>\n<p>注意Walleye那条——一家400人对冲基金，全员用Claude Code写代码。这种”全员渗透”的数字，过去通常出现在科技公司，不是华尔街。</p>\n<h2 id=\"excel这次是认真的\">Excel这次是认真的</h2>\n<p>金融民工的命根子在Excel。Anthropic这次把Claude塞进去的方式，比过去那种”AI助手”插件激进得多：</p>\n<ul>\n<li>从SEC文件和数据源<strong>自动构建财务模型</strong></li>\n<li>跨链接工作簿<strong>审计公式</strong></li>\n<li>跑<strong>敏感性分析</strong></li>\n</ul>\n<p>更关键的是上下文跨应用流转：你在Excel里搭好的模型，切到PowerPoint做汇报，Claude能直接接着用，不用重新解释你想干什么。Outlook目前还在路上，但加进来之后基本就是”开个会前帮你查清楚客户、准备好材料、会后写跟进邮件”一条龙。</p>\n<h2 id=\"数据连接器和底层模型\">数据连接器和底层模型</h2>\n<p>光有工具没有数据等于没用。Anthropic这次同步发布了8个新连接器：Dun &#x26; Bradstreet、Fiscal AI、Financial Modeling Prep、Guidepoint、IBISWorld、SS&#x26;C IntraLinks、Third Bridge、Verisk。</p>\n<p>外加一条重磅：<strong>Moody’s上线了MCP app</strong>，覆盖6亿+实体的信用评级和数据。</p>\n<p>底层模型用的是Claude Opus 4.7——在Vals AI的Finance Agent benchmark上拿了<strong>64.37%</strong>，目前行业第一。</p>\n<h2 id=\"这一仗在和谁打\">这一仗在和谁打</h2>\n<p>明摆着，对面是OpenAI。OpenAI一周前刚和Novo Nordisk签了大单进药厂、和高盛系的几个对冲基金谈合作。Anthropic这次直接掏出已经签了名的客户清单，节奏感很强。</p>\n<p>但更值得注意的是结构变化。模板+连接器+企业级权限管理的组合，意味着Anthropic不再卖”模型API”了，它卖的是<strong>一套能直接进合规审查的金融工作流</strong>。</p>\n<p>下一步该看的是定价。Claude Cowork和Managed Agents的具体收费方式如果走”按座位+按用量”的混合套路，对Bloomberg Terminal这种4天工作日$2400的传统工具是直接威胁。</p>\n<p>这场仗才刚开始。</p>\n<p class=\"source-ref\">参考来源：<a class=\"source-ref-cocoloop\" href=\"https://www.cocoloop.cn/\" target=\"_blank\">CocoLoop</a>、Agents for financial services and insurance（Anthropic官方博客）；Anthropic unleashes finance agents for Claude（The Register）；Anthropic launches 10 AI agents for banks and insurers（Yahoo Finance）；Anthropic Launches 10 Claude Agent Templates for Financial Services, Expands Microsoft 365 Integration（How2Shout）</p>",
+    coverImage: "",
+    category: "llm",
+    source: "Cocoloop",
+    url: "https://news.cocoloop.cn/2026/05/anthropic-finance-agents/",
   },
-  {
-    id: '2',
-    date: '2026-07-20',
-    title: 'Anthropic 推出 Claude Sonnet 5，长文本理解再创新高',
-    summary: 'Claude Sonnet 5 支持 1M tokens 上下文，在复杂推理、专业写作和代码生成方面表现优异，输入 ¥14/M tokens，输出 ¥72/M tokens，Artifacts 功能全面升级。',
-    category: 'llm',
-    source: 'Anthropic Blog',
-    url: 'https://www.anthropic.com/blog',
-  },
-  {
-    id: '3',
-    date: '2026-07-18',
-    title: 'DeepSeek V4 Pro 正式开源，MIT 协议 + 1M 上下文',
-    summary: 'DeepSeek V4 Pro 采用 MIT 开源协议发布，1M 上下文窗口，输入 ¥3.1/M tokens，输出 ¥6.3/M tokens。在 MMLU-Pro、HumanEval 等基准测试中与 GPT-5.4 持平，成为性价比最高的开源模型。',
-    category: 'opensource',
-    source: 'DeepSeek Blog',
-    url: 'https://api-docs.deepseek.com',
-  },
-  {
-    id: '4',
-    date: '2026-07-17',
-    title: 'Google 发布 Gemini 3.5 Flash，速度提升 3 倍',
-    summary: 'Gemini 3.5 Flash 在保持 1M 上下文的同时，推理速度提升 3 倍，输入价格仅 ¥11/M tokens，输出 ¥65/M tokens。原生支持视频、音频、图像多模态输入，Search Grounding 功能全面升级。',
-    category: 'llm',
-    source: 'Google AI Blog',
-    url: 'https://blog.google/technology/ai/',
-  },
-  {
-    id: '5',
-    date: '2026-07-15',
-    title: 'Meta 发布 Llama 4 系列，开源模型再添劲旅',
-    summary: 'Meta Llama 4 包含 8B、70B、405B 三个版本，全部开源。405B 版本在多项基准测试中接近 GPT-5.4 水平，支持多语言和代码生成，采用 Apache 2.0 协议。',
-    category: 'opensource',
-    source: 'Meta AI Blog',
-    url: 'https://ai.meta.com/blog',
-  },
-  {
-    id: '6',
-    date: '2026-07-14',
-    title: 'xAI 发布 Grok 4，Elon Musk 称其为「最强推理模型」',
-    summary: 'Grok 4 在数学、科学和代码推理方面表现突出，支持 1M 上下文，集成 X 平台实时数据。xAI 宣布 Grok 4 已向 X Premium+ 用户全面开放。',
-    category: 'llm',
-    source: 'xAI Blog',
-    url: 'https://x.ai/blog',
-  },
-  {
-    id: '7',
-    date: '2026-07-12',
-    title: '月之暗面 Kimi K2.6 发布，262K 上下文 + 多模态',
-    summary: 'Kimi K2.6 在长文档理解、多轮对话和工具调用方面大幅提升，支持 262K 上下文，输入 ¥6.8/M tokens，输出 ¥29/M tokens。新增原生图片理解和代码解释器，API 已全面开放。',
-    category: 'business',
-    source: 'Moonshot AI',
-    url: 'https://kimi.moonshot.cn',
-  },
-  {
-    id: '8',
-    date: '2026-07-10',
-    title: '智谱发布 GLM-5.1，200K 上下文 + 工具调用能力跃升',
-    summary: 'GLM-5.1 在 Agent 任务和工具调用方面大幅增强，支持 200K 上下文，性能对标 GPT-5.4。同步开源 GLM-5.1-9B 和 32B 版本，推动国产开源生态发展。',
-    category: 'opensource',
-    source: '智谱 AI Blog',
-    url: 'https://open.bigmodel.cn',
-  },
-  {
-    id: '9',
-    date: '2026-07-09',
-    title: '阿里通义千问 Qwen3-Max 发布，多模态能力全面领先',
-    summary: 'Qwen3-Max 在图像理解、视频分析和文档识别方面达到新高度，支持 1M 上下文。阿里云宣布 Qwen3-Max API 价格下调 60%，输入 ¥1.4/M tokens，输出 ¥5.6/M tokens，成为最具性价比的多模态模型。',
-    category: 'business',
-    source: '阿里云通义千问',
-    url: 'https://tongyi.aliyun.com',
-  },
-  {
-    id: '10',
-    date: '2026-07-07',
-    title: 'Mistral AI 发布 Large 3，欧洲最强开源大模型',
-    summary: 'Mistral Large 3 采用 123B 参数 MoE 架构，在代码生成、多语言和长文本任务上表现优异，输入 ¥7.2/M tokens，输出 ¥22/M tokens。同步开源 Mistral 3 Small 24B，推动欧洲 AI 生态。',
-    category: 'opensource',
-    source: 'Mistral AI Blog',
-    url: 'https://mistral.ai/news',
-  },
-  {
-    id: '11',
-    date: '2026-07-05',
-    title: 'AI 基础设施融资再创新高：CoreWeave 获 86 亿美元融资',
-    summary: 'AI 云服务商 CoreWeave 完成 86 亿美元新一轮融资，估值超过 350 亿美元。此次融资将用于扩建数据中心和采购 NVIDIA B200 GPU，满足全球 AI 推理需求激增。',
-    category: 'funding',
-    source: 'TechCrunch',
-    url: 'https://techcrunch.com',
-  },
-  {
-    id: '12',
-    date: '2026-07-02',
-    title: '字节跳动 Seed 2 Pro 发布，豆包 DAU 突破 8000 万',
-    summary: 'Seed 2 Pro 支持 256K 上下文，在中文理解和创意写作方面保持领先。字节跳动宣布豆包 App 日活突破 8000 万，成为中国用户量最大的 AI 助手，同步开放 Seed 2 Pro API 内测。',
-    category: 'business',
-    source: '字节跳动技术博客',
-    url: 'https://www.volcengine.com',
-  },
-  {
-    id: '13',
-    date: '2026-07-01',
-    title: 'Anthropic 完成 75 亿美元 E 轮融资，估值突破 600 亿',
-    summary: 'Anthropic 完成由 Google、Salesforce 等领投的 75 亿美元 E 轮融资，估值达 615 亿美元。资金将用于 Claude 模型研发、全球扩张和安全研究，进一步挑战 OpenAI 的市场地位。',
-    category: 'funding',
-    source: 'Bloomberg',
-    url: 'https://www.bloomberg.com',
-  },
+
 ]
 
-export function getNewsByDate(): Map<string, NewsItem[]> {
-  const grouped = new Map<string, NewsItem[]>()
-  const sorted = [...newsItems].sort((a, b) => b.date.localeCompare(a.date))
-  for (const item of sorted) {
-    const existing = grouped.get(item.date) || []
-    existing.push(item)
-    grouped.set(item.date, existing)
-  }
-  return grouped
-}
-
-export function getNewsByCategory(category: string): NewsItem[] {
-  if (category === 'all') return [...newsItems].sort((a, b) => b.date.localeCompare(a.date))
-  return newsItems.filter((n) => n.category === category).sort((a, b) => b.date.localeCompare(a.date))
-}
-
-export function getRecentNews(limit = 5): NewsItem[] {
-  return [...newsItems].sort((a, b) => b.date.localeCompare(a.date)).slice(0, limit)
+export function getRecentNews(limit: number = 5): NewsItem[] {
+  return [...newsItems]
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, limit)
 }

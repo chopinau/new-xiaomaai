@@ -1,15 +1,14 @@
 // =====================================================
 // 工具信息补全辅助脚本 (不调用 LLM)
 // 用法: node scripts/audit-tools.mjs [--limit=20] [--out=scripts/audit-tools.report.md]
-// 输出: scripts/audit-tools.report.md
-//   - 第一段: 缺 logo 的工具(列出 og:image 候选)
-//   - 第二段: 缺中文描述 / 介绍过短(< 30 字符)的工具(列出 og:description 候选 + 翻译建议)
-//   - 第三段: 完整「待补全字段表」(CSV 风格, 方便复制)
+//        node scripts/audit-tools.mjs --draft [--out=scripts/draft-audit.report.md]
+// 输出: scripts/audit-tools.report.md (默认) 或 scripts/draft-audit.report.md (--draft)
+//   - 默认模式(正式库): 缺 logo / 缺中文描述 / CSV 待补全表
+//   - 草稿模式(--draft): 四类分类(可直接入库/需翻译/需重写/建议丢弃) + 英文内容核查
 // =====================================================
 import { readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import * as cheerio from 'cheerio'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.join(__dirname, '..')
@@ -21,9 +20,183 @@ const args = Object.fromEntries(
   })
 )
 const LIMIT = parseInt(args.limit || '99999', 10)
-const OUT = path.join(ROOT, args.out || 'scripts/audit-tools.report.md')
+const DRAFT_MODE = args.draft === 'true'
+const DEFAULT_OUT = DRAFT_MODE ? 'scripts/draft-audit.report.md' : 'scripts/audit-tools.report.md'
+const OUT = path.join(ROOT, args.out || DEFAULT_OUT)
 const TOOLS_FILE = path.join(ROOT, 'data', 'tools.ts')
+const DRAFT_FILE = path.join(ROOT, 'data', 'tools-draft.ts')
 const CONCURRENCY = 3
+
+// 无 CJK 即视为全英文(用于标记 [需翻译])
+function isMostlyEnglish(s) {
+  return !/[\u4e00-\u9fa5\u3040-\u30ff\uac00-\ud7af]/.test(s || '')
+}
+
+// 价值感不足: 描述过短且为纯英文
+function isLowValueEnglish(s) {
+  if (!s) return true
+  return s.length < 30 && isMostlyEnglish(s)
+}
+
+// 草稿模式: 读取 tools-draft.ts 并解析嵌套的 ToolDraft 结构
+function loadDrafts() {
+  const raw = readFileSync(DRAFT_FILE, 'utf-8')
+  const drafts = extractArray(raw, 'export const toolDrafts: ToolDraft[] = [')
+  // 每个 draft 有 .tool 字段(嵌套的 Tool 对象) + .source + .fetchedAt
+  return drafts.map((d) => ({
+    source: d.source || 'unknown',
+    sourceUrl: d.sourceUrl || '',
+    fetchedAt: d.fetchedAt || '',
+    ...(d.tool || {}),
+  }))
+}
+
+// ===== 草稿审计模式: 四类分类 =====
+if (DRAFT_MODE) {
+  console.log('[audit] 草稿审计模式: 读取 tools-draft.ts')
+  const drafts = loadDrafts()
+  console.log(`[audit] 共 ${drafts.length} 条草稿`)
+
+  const okList = []        // 可直接入库
+  const translateList = [] // 需翻译
+  const rewriteList = []   // 需重写
+  const dropList = []      // 建议丢弃
+
+  for (const d of drafts) {
+    const desc = d.description || ''
+    const hasChinese = !isMostlyEnglish(desc)
+    const isShort = desc.length < 20
+
+    // 建议丢弃: 无URL / 无描述 / 与AI无关
+    if (!d.url || !d.name) {
+      dropList.push(d)
+      continue
+    }
+
+    if (hasChinese && desc.length >= 20) {
+      okList.push(d)
+    } else if (!hasChinese && desc.length >= 30) {
+      // 全英文但长度够 → 需翻译
+      translateList.push(d)
+    } else if (isShort || (!hasChinese && desc.length < 30)) {
+      // 过短或价值感不足 → 需重写
+      rewriteList.push(d)
+    } else {
+      // 其他情况默认需翻译
+      translateList.push(d)
+    }
+  }
+
+  console.log(`[audit] 分类: 可直接入库 ${okList.length} / 需翻译 ${translateList.length} / 需重写 ${rewriteList.length} / 建议丢弃 ${dropList.length}`)
+
+  // 按来源统计
+  const bySource = {}
+  for (const d of drafts) {
+    bySource[d.source] = (bySource[d.source] || 0) + 1
+  }
+  const okBySource = {}
+  for (const d of okList) {
+    okBySource[d.source] = (okBySource[d.source] || 0) + 1
+  }
+
+  // 生成报告
+  function draftRow(d, i) {
+    const desc = (d.description || '').slice(0, 80)
+    return `| ${i + 1} | \`${d.slug || ''}\` | ${escapeMd(d.name)} | \`${d.source}\` | ${desc.length} | ${escapeMd(desc)} | ${isMostlyEnglish(d.description || '') ? '英文' : '中文'} |`
+  }
+
+  let md = `# 草稿内容质量核查报告
+
+> 生成时间: ${new Date().toISOString()}
+> 数据源: \`data/tools-draft.ts\` (${drafts.length} 条草稿)
+>
+> ## 分类统计
+>
+> | 类别 | 数量 | 说明 |
+> |------|------|------|
+> | ✅ 可直接入库 | ${okList.length} | 已有中文简介且长度≥20字符 |
+> | 🌐 需翻译 | ${translateList.length} | 全英文简介,需人工翻译为中文 |
+> | ✏️ 需重写 | ${rewriteList.length} | 简介过短或无价值感,需人工重写 |
+> | ❌ 建议丢弃 | ${dropList.length} | 重复/失效/与AI无关 |
+>
+> ## 按来源统计
+>
+> | 来源 | 总数 | 可入库 | 入库率 |
+> |------|------|--------|--------|
+`
+
+  for (const [src, cnt] of Object.entries(bySource)) {
+    const ok = okBySource[src] || 0
+    md += `| ${src} | ${cnt} | ${ok} | ${cnt > 0 ? Math.round(ok / cnt * 100) : 0}% |\n`
+  }
+
+  md += `\n## ✅ 可直接入库 (${okList.length} 条)
+
+> 这些草稿已有中文简介且长度足够,可直接合并到 \`data/tools.ts\`
+
+| # | slug | name | source | 描述字符数 | 简介(前80字) | 语言 |
+|---|------|------|--------|------------|-------------|------|
+`
+  okList.slice(0, 50).forEach((d, i) => { md += draftRow(d, i) + '\n' })
+  if (okList.length > 50) md += `| ... | | | | | _(共 ${okList.length} 条,仅显示前50条)_ | | | |\n`
+
+  md += `\n## 🌐 需翻译 (${translateList.length} 条)
+
+> 全英文简介,需人工翻译为中文后方可入库
+
+| # | slug | name | source | 描述字符数 | 简介(前80字) | 语言 |
+|---|------|------|--------|------------|-------------|------|
+`
+  translateList.slice(0, 50).forEach((d, i) => { md += draftRow(d, i) + '\n' })
+  if (translateList.length > 50) md += `| ... | | | | | _(共 ${translateList.length} 条,仅显示前50条)_ | | | |\n`
+
+  md += `\n## ✏️ 需重写 (${rewriteList.length} 条)
+
+> 简介过短或无价值感,需人工重写中文简介
+
+| # | slug | name | source | 描述字符数 | 当前简介 | 语言 |
+|---|------|------|--------|------------|----------|------|
+`
+  rewriteList.slice(0, 50).forEach((d, i) => { md += draftRow(d, i) + '\n' })
+  if (rewriteList.length > 50) md += `| ... | | | | | _(共 ${rewriteList.length} 条,仅显示前50条)_ | | | |\n`
+
+  md += `\n## ❌ 建议丢弃 (${dropList.length} 条)
+
+> 无URL/无名称/与AI无关,建议从草稿区删除
+
+| # | slug | name | source | 原因 |
+|---|------|------|--------|------|
+`
+  dropList.slice(0, 20).forEach((d, i) => {
+    const reason = !d.url ? '无URL' : !d.name ? '无名称' : '其他'
+    md += `| ${i + 1} | \`${d.slug || ''}\` | ${escapeMd(d.name)} | \`${d.source}\` | ${reason} |\n`
+  })
+
+  md += `\n## 处理建议
+
+1. **✅ 可直接入库** (${okList.length} 条): 可批量合并到 \`data/tools.ts\`
+2. **🌐 需翻译** (${translateList.length} 条): 需人工翻译英文简介为中文后入库
+3. **✏️ 需重写** (${rewriteList.length} 条): 简介质量不足,需人工重写
+4. **❌ 建议丢弃** (${dropList.length} 条): 可从草稿区清理
+
+### 入库操作
+\`\`\`bash
+# 仅入库"可直接入库"类别的草稿
+# 在 admin 后台勾选对应条目,点击"批量入库"
+\`\`\`
+
+## 边界
+- 不调用任何 LLM
+- 不抓取 og:meta (草稿已有抓取数据)
+- 仅基于现有 description/slug/name 字段做质量判断
+`
+
+  writeFileSync(OUT, md, 'utf-8')
+  console.log(`[audit] 草稿核查报告已写入: ${OUT}`)
+  process.exit(0)
+}
+
+// ===== 正式库审计模式 (原有逻辑) =====
 
 // 复用现有 extractArray 思路 (marker 定位 + 括号匹配)
 // 同时支持单/双引号字符串边界
@@ -187,6 +360,7 @@ console.log(`[audit] 缺/短中文描述: ${needsDesc.length} 条`)
 // 抓取 og meta
 async function fetchOgMeta(url) {
   try {
+    const cheerio = await import('cheerio')
     const controller = new AbortController()
     const timeout = setTimeout(() => controller.abort(), 8000)
     const res = await fetch(url, {
@@ -200,7 +374,7 @@ async function fetchOgMeta(url) {
     clearTimeout(timeout)
     if (!res.ok) return null
     const html = await res.text()
-    const $ = cheerio.load(html)
+    const $ = cheerio.default.load(html)
     const get = (selector) =>
       $(selector).attr('content') ||
       $(selector).attr('href') ||

@@ -15,13 +15,13 @@ import { readFileSync, writeFileSync } from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import * as cheerio from 'cheerio'
+import { fetchWithRetry } from './_browser-headers.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const DATA_DIR = path.join(__dirname, '..', 'data')
 const HOME = 'https://www.toolify.ai/'
 const SITEMAP_URL = 'https://www.toolify.ai/sitemap.xml'
 const SOURCE = 'toolify'
-const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36'
 
 const args = process.argv.slice(2)
 const limitArg = args.find((a) => a.startsWith('--limit='))
@@ -32,7 +32,7 @@ const CONCURRENCY = 3      // 并发数
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
 async function fetchText(url) {
-  const res = await fetch(url, { headers: { 'user-agent': UA, 'accept-language': 'en,zh-CN;q=0.9' } })
+  const res = await fetchWithRetry(url, {}, 3)
   if (!res.ok) throw new Error(`HTTP ${res.status} ${url}`)
   return res.text()
 }
