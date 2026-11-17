@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { ToastProvider } from '@/components/ui/toast'
 import { Toaster } from '@/components/ui/toaster'
+import TempGate from '@/components/temp-gate'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -46,6 +47,7 @@ export default function RootLayout({
   return (
     <html lang="zh-CN">
       <body className="min-h-screen bg-white font-sans text-ink-900 antialiased">
+        <TempGate />
         <ToastProvider>
           {children}
         </ToastProvider>
