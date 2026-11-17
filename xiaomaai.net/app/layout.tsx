@@ -13,7 +13,11 @@ export const metadata: Metadata = {
   description: '聚合 440+ 全球 AI 工具，对话、图像、视频、音频、编程、效率全覆盖。支持一键访问与 API 配置教程。',
   keywords: ['AI 工具', 'AI 工具市场', 'ChatGPT', 'Claude', 'Midjourney', '小马 AI', 'AI 画布'],
   icons: {
-    icon: '/icon.svg',
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon-192.png', type: 'image/png', sizes: '192x192' },
+      { url: '/favicon-512.png', type: 'image/png', sizes: '512x512' },
+    ],
     apple: '/apple-icon.png',
   },
   openGraph: {
