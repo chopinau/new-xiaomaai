@@ -1,11 +1,18 @@
-// 仅限本地开发环境使用，需要文件系统读写能力
-export const runtime = 'nodejs';
+// Cloudflare Pages/OpenNext 要求非静态路由使用 Edge Runtime。
+// 文件系统仅本地 dev 可用：用 eval 隐藏 require，避免 webpack 打包 node 原生模块。
+export const runtime = 'edge';
 
 import { NextRequest, NextResponse } from 'next/server'
-import { promises as fs } from 'node:fs'
-import path from 'node:path'
 
 export const dynamic = 'force-dynamic'
+
+function nodeRequire(name: string): any {
+  try {
+    return (0, eval)('require')(name)
+  } catch {
+    return null
+  }
+}
 
 type NewsDraft = {
   id: string
@@ -47,6 +54,8 @@ function extractArray(raw: string, marker: string): NewsDraft[] {
 }
 
 function getFilePaths() {
+  const path = nodeRequire('path')
+  if (!path) return null
   return {
     draftFile: path.join(process.cwd(), 'data', 'news-draft.ts'),
     newsFile: path.join(process.cwd(), 'data', 'news.ts'),
@@ -55,8 +64,10 @@ function getFilePaths() {
 
 async function readDrafts(): Promise<NewsDraft[]> {
   try {
+    const fs = nodeRequire('fs')
     const paths = getFilePaths()
-    const raw = await fs.readFile(paths.draftFile, 'utf-8')
+    if (!fs || !paths) return []
+    const raw = await fs.promises.readFile(paths.draftFile, 'utf-8')
     return extractArray(raw, 'export const newsDrafts: NewsDraft[] = [')
   } catch {
     return []
@@ -86,7 +97,8 @@ export function getNewsDrafts(): NewsDraft[] {
   return newsDrafts
 }
 `
-  await fs.writeFile(paths.draftFile, output, 'utf-8')
+  const fs = nodeRequire('fs')
+  if (fs) await fs.promises.writeFile(paths.draftFile, output, 'utf-8')
 }
 
 function parseRSSDate(dateStr: string): string {
@@ -101,8 +113,10 @@ function parseRSSDate(dateStr: string): string {
 }
 
 async function appendToNews(item: NewsDraft) {
+  const fs = nodeRequire('fs')
   const paths = getFilePaths()
-  const raw = await fs.readFile(paths.newsFile, 'utf-8')
+  if (!fs || !paths) throw new Error('文件系统不可用')
+  const raw = await fs.promises.readFile(paths.newsFile, 'utf-8')
   const marker = 'export const newsItems: NewsItem[] = ['
   const idx = raw.indexOf(marker)
   if (idx === -1) throw new Error('data/news.ts 格式异常: 找不到 newsItems 数组')
@@ -123,11 +137,18 @@ async function appendToNews(item: NewsDraft) {
 
   const insertAt = idx + marker.length
   const updated = raw.slice(0, insertAt) + '\n' + entry + raw.slice(insertAt)
-  await fs.writeFile(paths.newsFile, updated, 'utf-8')
+  await fs.promises.writeFile(paths.newsFile, updated, 'utf-8')
 }
 
 export async function POST(request: NextRequest) {
   try {
+    if (!nodeRequire('fs') || !nodeRequire('path')) {
+      return NextResponse.json(
+        { success: false, error: '边缘环境不支持文件系统操作，请在本地开发环境使用' },
+        { status: 503 }
+      )
+    }
+
     const body = await request.json()
     const { id, password, action } = body || {}
 

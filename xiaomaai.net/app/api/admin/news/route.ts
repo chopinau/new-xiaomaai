@@ -1,11 +1,18 @@
-// 仅限本地开发环境使用，需要文件系统读写能力
-export const runtime = 'nodejs';
+// Cloudflare Pages/OpenNext 要求非静态路由使用 Edge Runtime。
+// 文件系统仅本地 dev 可用：用 eval 隐藏 require，避免 webpack 打包 node 原生模块。
+export const runtime = 'edge';
 
 import { NextRequest, NextResponse } from 'next/server'
-import { promises as fs } from 'node:fs'
-import path from 'node:path'
 
 export const dynamic = 'force-dynamic'
+
+function nodeRequire(name: string): any {
+  try {
+    return (0, eval)('require')(name)
+  } catch {
+    return null
+  }
+}
 
 function extractArray(raw: string, marker: string): unknown[] {
   const start = raw.indexOf(marker)
@@ -34,8 +41,11 @@ function extractArray(raw: string, marker: string): unknown[] {
 
 async function readDrafts(): Promise<unknown[]> {
   try {
+    const fs = nodeRequire('fs')
+    const path = nodeRequire('path')
+    if (!fs || !path) return []
     const filePath = path.join(process.cwd(), 'data', 'news-draft.ts')
-    const raw = await fs.readFile(filePath, 'utf-8')
+    const raw = await fs.promises.readFile(filePath, 'utf-8')
     return extractArray(raw, 'export const newsDrafts: NewsDraft[] = [')
   } catch {
     return []
@@ -51,6 +61,13 @@ export async function GET(request: NextRequest) {
   const expected = process.env.ADMIN_PASSWORD || 'admin123'
   if (password !== expected) {
     return NextResponse.json({ success: false, error: '密码错误' }, { status: 401 })
+  }
+
+  if (!nodeRequire('fs') || !nodeRequire('path')) {
+    return NextResponse.json(
+      { success: false, error: '边缘环境不支持文件系统操作，请在本地开发环境使用' },
+      { status: 503 }
+    )
   }
 
   let drafts = (await readDrafts()) as Array<{ id: string; title: string; source: string; summary: string; fetchedAt: string; publishedAt: string }>
